@@ -1,0 +1,84 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rayzin Capitals - Loading...</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background-color: #0a0b0d; /* Matching Rayzin capitals warm black */
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .loader-container {
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.05);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border-left-color: #00c25a; /* Matching emerald green */
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .text {
+            color: #9fb1c0;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <div class="text">Verifying secure session...</div>
+    </div>
+
+    <!-- Firebase Smart Routing Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Same Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjS4UVPc8plWyKGzzuFwSnliT5Me75wVE",
+            authDomain: "testcrypto-bd7a4.firebaseapp.com",
+            projectId: "testcrypto-bd7a4",
+            storageBucket: "testcrypto-bd7a4.firebasestorage.app",
+            messagingSenderId: "588861293611",
+            appId: "1:588861293611:web:8a1c31fe634720b180966e"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Smart Redirector Logic
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is authenticated, go to dashboard
+                window.location.href = "dashboard.html";
+            } else {
+                // No session, redirect to login page
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+</body>
+</html>
