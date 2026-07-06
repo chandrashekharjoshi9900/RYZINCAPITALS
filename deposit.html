@@ -1,0 +1,121 @@
+<!-- deposit.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit Funds - Premium Platform</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header / Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
+                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-1">
+                    <li class="nav-item"><a class="nav-link-custom" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="packages.html"><i class="fa-solid fa-cubes"></i> Packages</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet</a></li>
+                    <li class="nav-item"><a class="nav-link-custom active" href="deposit.html"><i class="fa-solid fa-arrow-down"></i> Deposit</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="withdraw.html"><i class="fa-solid fa-arrow-up"></i> Withdraw</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="referral.html"><i class="fa-solid fa-users"></i> Referrals</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="transactions.html"><i class="fa-solid fa-list-check"></i> Ledger</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="profile.html"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row g-4">
+            <!-- Left Column: Submit Request Form -->
+            <div class="col-lg-5">
+                <div class="p-4 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
+                    <h4 class="text-white fw-bold mb-3"><i class="fa-solid fa-wallet text-info me-2"></i>New Deposit Request</h4>
+                    <p class="text-muted small">Select your method, transfer the exact amount, and fill the form with your TxID.</p>
+                    <hr style="border-color: var(--border-color)">
+
+                    <form id="depositForm">
+                        <div class="mb-3">
+                            <label for="paymentMethod" class="form-label">Select Payment Method</label>
+                            <select class="form-control" id="paymentMethod" required>
+                                <option value="USDT_TRC20">USDT (TRC20) - Fast & Cheap</option>
+                                <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH_ERC20">Ethereum (ERC20)</option>
+                            </select>
+                        </div>
+
+                        <!-- Dynamic Address Card -->
+                        <div class="p-3 mb-3 rounded-3 bg-dark border border-secondary">
+                            <span class="text-muted small d-block mb-1">Company Receiver Address:</span>
+                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                <span class="fw-bold text-info text-break" style="font-size: 13px;" id="companyAddress">TX3TfT87e8yD14Nj9yD14Nj9yD14Nj9yD14</span>
+                                <button type="button" class="btn btn-outline-info btn-sm" id="btnCopyAddress">
+                                    <i class="fa-solid fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="depositAmount" class="form-label">Deposit Amount ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="depositAmount" placeholder="Min. $10" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="transactionId" class="form-label">Transaction Hash / TxID</label>
+                            <input type="text" class="form-control" id="transactionId" placeholder="Enter TxID network code" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-premium" id="btnSubmitDeposit">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Submit Deposit Request
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Past Deposit History -->
+            <div class="col-lg-7">
+                <div class="p-4 rounded-4 custom-table h-100">
+                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-receipt text-info me-2"></i>My Deposit Requests</h5>
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>TxID / Hash</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="depositTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">No deposits recorded yet.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Logic Script Module -->
+    <script type="module" src="js/deposit.js"></script>
+</body>
+</html>
