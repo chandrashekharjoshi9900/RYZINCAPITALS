@@ -1,0 +1,139 @@
+<!-- referral.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Network - Premium Platform</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Header / Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
+                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-1">
+                    <li class="nav-item"><a class="nav-link-custom" href="dashboard.html"><i class="fa-solid fa-house"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="packages.html"><i class="fa-solid fa-cubes"></i> Packages</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="wallet.html"><i class="fa-solid fa-wallet"></i> Wallet</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="deposit.html"><i class="fa-solid fa-arrow-down"></i> Deposit</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="withdraw.html"><i class="fa-solid fa-arrow-up"></i> Withdraw</a></li>
+                    <li class="nav-item"><a class="nav-link-custom active" href="referral.html"><i class="fa-solid fa-users"></i> Referrals</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="transactions.html"><i class="fa-solid fa-list-check"></i> Ledger</a></li>
+                    <li class="nav-item"><a class="nav-link-custom" href="profile.html"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row g-4 mb-5">
+            <!-- Share & Invite Box Card -->
+            <div class="col-lg-12">
+                <div class="p-5 rounded-4 border border-secondary" style="background: var(--bg-secondary);">
+                    <div class="row align-items-center g-4">
+                        <div class="col-md-7">
+                            <h3 class="text-white fw-bold mb-2">Invite & Earn Commissions</h3>
+                            <p class="text-muted mb-0">Share your referral link with your colleagues. You will receive a one-time commission instantly as soon as their package is approved by the admin.</p>
+                        </div>
+                        <div class="col-md-5">
+                            <!-- Referral Code Display -->
+                            <div class="p-3 mb-3 bg-dark rounded border border-secondary">
+                                <span class="text-muted small d-block mb-1">Your Referral Code:</span>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong class="text-info fs-5" id="lblRefCode">Loading...</strong>
+                                    <button class="btn btn-outline-info btn-sm" id="btnCopyCode"><i class="fa-solid fa-copy"></i> Copy</button>
+                                </div>
+                            </div>
+                            <!-- Referral Link Display -->
+                            <div class="p-3 bg-dark rounded border border-secondary">
+                                <span class="text-muted small d-block mb-1">Your Referral Link:</span>
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <span class="text-muted small text-truncate" id="lblRefLink">Loading link...</span>
+                                    <button class="btn btn-info btn-sm text-dark fw-bold px-3" id="btnCopyLink"><i class="fa-solid fa-share-nodes"></i> Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric summaries columns -->
+        <div class="row g-3 mb-5">
+            <div class="col-sm-6 col-md-3">
+                <div class="dash-card">
+                    <div class="dash-card-title">Total Referrals</div>
+                    <div class="dash-card-value text-info" id="statTotalRefs">0</div>
+                    <i class="fa-solid fa-users dash-card-icon"></i>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="dash-card">
+                    <div class="dash-card-title">Active Referrals</div>
+                    <div class="dash-card-value text-success" id="statActiveRefs">0</div>
+                    <i class="fa-solid fa-user-check dash-card-icon"></i>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="dash-card">
+                    <div class="dash-card-title">Inactive Referrals</div>
+                    <div class="dash-card-value text-danger" id="statInactiveRefs">0</div>
+                    <i class="fa-solid fa-user-xmark dash-card-icon"></i>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="dash-card">
+                    <div class="dash-card-title">Referral Earnings</div>
+                    <div class="dash-card-value text-warning">$<span id="statRefEarnings">0.00</span></div>
+                    <i class="fa-solid fa-sack-dollar dash-card-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Referrals Listing Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="p-4 rounded-4 custom-table">
+                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-diagram-project text-info me-2"></i>My Referrals Network</h5>
+                    <div class="table-responsive">
+                        <table class="table mb-0 align-middle">
+                            <thead>
+                                <tr>
+                                    <th>User ID</th>
+                                    <th>Referral Username</th>
+                                    <th>Date Joined</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referralsTableBody">
+                                <tr>
+                                    <td colspan="4" class="text-center text-muted py-4">Loading your direct network...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Logic Script Module -->
+    <script type="module" src="js/referral.js"></script>
+</body>
+</html>
