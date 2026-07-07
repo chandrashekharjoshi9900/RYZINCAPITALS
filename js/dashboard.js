@@ -1,9 +1,11 @@
 // js/dashboard.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, getDoc, collection, query, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let incomeChartInstance = null;
+let cachedUserProfile = null;
+let cachedWalletData = null;
 
 // Auth Observer
 onAuthStateChanged(auth, async (user) => {
@@ -13,81 +15,121 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     try {
-        await loadUserProfile(user.uid);
-        await loadWalletStats(user.uid);
-        await loadReferralsNetwork(user.uid);
-        await loadRecentLedger(user.uid);
-        await initPerformanceChart(user.uid);
+        // Run network requests in parallel for optimal performance
+        const [profile, wallet] = await Promise.all([
+            fetchUserProfile(user.uid),
+            fetchWalletStats(user.uid),
+            loadReferralsNetwork(user.uid),
+            loadRecentLedger(user.uid)
+        ]);
+
+        // Process profile rendering
+        if (profile) {
+            renderUserProfile(profile);
+        }
+
+        // Process wallet rendering & chart initialization
+        if (wallet) {
+            renderWalletStats(wallet);
+            initPerformanceChart(wallet);
+        }
+
     } catch (error) {
         console.error("Error loading dashboard data:", error);
     }
 });
 
-// 1. User Profile Loader
-async function loadUserProfile(uid) {
-    const userDocRef = doc(db, "users", uid);
-    const userSnapshot = await getDoc(userDocRef);
-
-    if (userSnapshot.exists()) {
-        const data = userSnapshot.data();
-        document.getElementById("lblFullName").innerText = data.fullName || "User";
-        document.getElementById("lblUserId").innerText = data.userId || "---";
-        document.getElementById("lblUsername").innerText = data.username || "---";
-        document.getElementById("lblReferralCode").innerText = data.referralCode || "---";
-    }
-}
-
-// 2. Wallet Balance & Profit Intervals Loader
-async function loadWalletStats(uid) {
-    const walletDocRef = doc(db, "wallets", uid);
-    const walletSnapshot = await getDoc(walletDocRef);
-
-    if (walletSnapshot.exists()) {
-        const wallet = walletSnapshot.data();
-        document.getElementById("statWalletBalance").innerText = parseFloat(wallet.availableBalance || 0).toFixed(2);
-        document.getElementById("statTotalInvestment").innerText = parseFloat(wallet.totalInvestment || 0).toFixed(2);
-        document.getElementById("statTradingIncome").innerText = parseFloat(wallet.totalProfit || 0).toFixed(2);
-        document.getElementById("statReferralIncome").innerText = parseFloat(wallet.referralEarnings || 0).toFixed(2);
-
-        document.getElementById("statDailyProfit").innerText = parseFloat(wallet.dailyProfit || 0).toFixed(2);
-        document.getElementById("statWeeklyProfit").innerText = parseFloat(wallet.weeklyProfit || 0).toFixed(2);
-        document.getElementById("statMonthlyProfit").innerText = parseFloat(wallet.monthlyProfit || 0).toFixed(2);
-    }
-}
-
-// 3. Referrals Network Count
-async function loadReferralsNetwork(uid) {
-    const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
-    const querySnapshot = await getDocs(referralsQuery);
-    
-    let totalDirect = 0;
-    let activeRefs = 0;
-    let inactiveRefs = 0;
-
-    querySnapshot.forEach((doc) => {
-        totalDirect++;
-        const refUser = doc.data();
-        if (refUser.status === "active") {
-            activeRefs++;
-        } else {
-            inactiveRefs++;
+// 1. Fetch User Profile (with localized caching)
+async function fetchUserProfile(uid) {
+    if (cachedUserProfile) return cachedUserProfile;
+    try {
+        const userDocRef = doc(db, "users", uid);
+        const userSnapshot = await getDoc(userDocRef);
+        if (userSnapshot.exists()) {
+            cachedUserProfile = userSnapshot.data();
+            return cachedUserProfile;
         }
-    });
-
-    document.getElementById("statDirectRefs").innerText = totalDirect;
-    document.getElementById("statActiveRefs").innerText = activeRefs;
-    document.getElementById("statInactiveRefs").innerText = inactiveRefs;
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+    }
+    return null;
 }
 
-// 4. Recent Ledger Transactions (UPDATED - INDEX FREE CLIENT SORT)
+function renderUserProfile(data) {
+    document.getElementById("lblFullName").innerText = data.fullName || "User";
+    document.getElementById("lblUserId").innerText = data.userId || "---";
+    document.getElementById("lblUsername").innerText = data.username || "---";
+    document.getElementById("lblReferralCode").innerText = data.referralCode || "---";
+}
+
+// 2. Fetch Wallet Stats (with localized caching to prevent duplicate document requests)
+async function fetchWalletStats(uid) {
+    if (cachedWalletData) return cachedWalletData;
+    try {
+        const walletDocRef = doc(db, "wallets", uid);
+        const walletSnapshot = await getDoc(walletDocRef);
+        if (walletSnapshot.exists()) {
+            cachedWalletData = walletSnapshot.data();
+            return cachedWalletData;
+        }
+    } catch (error) {
+        console.error("Error fetching wallet stats:", error);
+    }
+    return null;
+}
+
+function renderWalletStats(wallet) {
+    document.getElementById("statWalletBalance").innerText = parseFloat(wallet.availableBalance || 0).toFixed(2);
+    document.getElementById("statTotalInvestment").innerText = parseFloat(wallet.totalInvestment || 0).toFixed(2);
+    document.getElementById("statTradingIncome").innerText = parseFloat(wallet.totalProfit || 0).toFixed(2);
+    document.getElementById("statReferralIncome").innerText = parseFloat(wallet.referralEarnings || 0).toFixed(2);
+
+    document.getElementById("statDailyProfit").innerText = parseFloat(wallet.dailyProfit || 0).toFixed(2);
+    document.getElementById("statWeeklyProfit").innerText = parseFloat(wallet.weeklyProfit || 0).toFixed(2);
+    document.getElementById("statMonthlyProfit").innerText = parseFloat(wallet.monthlyProfit || 0).toFixed(2);
+}
+
+// 3. Referrals Network Count (Secure Query)
+async function loadReferralsNetwork(uid) {
+    try {
+        // Aligns with updated security rules allowing referrers to query their own referee documents
+        const referralsQuery = query(collection(db, "users"), where("referredBy", "==", uid));
+        const querySnapshot = await getDocs(referralsQuery);
+        
+        let totalDirect = 0;
+        let activeRefs = 0;
+        let inactiveRefs = 0;
+
+        querySnapshot.forEach((doc) => {
+            totalDirect++;
+            const refUser = doc.data();
+            if (refUser.status === "active") {
+                activeRefs++;
+            } else {
+                inactiveRefs++;
+            }
+        });
+
+        document.getElementById("statDirectRefs").innerText = totalDirect;
+        document.getElementById("statActiveRefs").innerText = activeRefs;
+        document.getElementById("statInactiveRefs").innerText = inactiveRefs;
+    } catch (error) {
+        console.error("Error loading referral network:", error);
+    }
+}
+
+// 4. Recent Ledger Transactions (Capped Query to Minimize Read Billing)
 async function loadRecentLedger(uid) {
     const tbody = document.getElementById("recentTransactions");
+    if (!tbody) return;
+    
     tbody.innerHTML = ""; 
 
-    // Index-free query (no orderBy)
+    // Imposed limit(50) to prevent download of entire transaction archives at scale
     const txQuery = query(
         collection(db, "transactions"),
-        where("uid", "==", uid)
+        where("uid", "==", uid),
+        limit(50)
     );
 
     try {
@@ -103,14 +145,14 @@ async function loadRecentLedger(uid) {
             txList.push(doc.data());
         });
 
-        // Client sorting in Javascript memory
+        // Safe in-memory sorting of the capped subset
         txList.sort((a, b) => {
             const timeA = new Date(a.timestamp || a.date);
             const timeB = new Date(b.timestamp || b.date);
             return timeB - timeA;
         });
 
-        // Limit results to 5
+        // Get top 5 items
         const recentTxList = txList.slice(0, 5);
 
         recentTxList.forEach((tx) => {
@@ -125,8 +167,8 @@ async function loadRecentLedger(uid) {
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td class="small text-muted">${tx.date}</td>
-                <td class="fw-medium">${tx.type}</td>
+                <td class="small text-muted">${tx.date || "---"}</td>
+                <td class="fw-medium">${tx.type || "---"}</td>
                 <td class="fw-bold text-info">$${parseFloat(tx.amount || 0).toFixed(2)}</td>
                 <td>${statusBadge}</td>
             `;
@@ -134,25 +176,20 @@ async function loadRecentLedger(uid) {
         });
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-3">Failed to load transactions</td></tr>`;
-        console.error(e);
+        console.error("Error loading recent ledger:", e);
     }
 }
 
-// 5. Initialize Performance Chart
-async function initPerformanceChart(uid) {
-    const ctx = document.getElementById('incomeChart').getContext('2d');
+// 5. Initialize Performance Chart (Using cached data to avoid redundant Firestore read)
+async function initPerformanceChart(wallet) {
+    const canvas = document.getElementById('incomeChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
     const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     
-    const walletDocRef = doc(db, "wallets", uid);
-    const walletSnapshot = await getDoc(walletDocRef);
-    let totalProfits = 0;
-    let refEarnings = 0;
-
-    if (walletSnapshot.exists()) {
-        const wallet = walletSnapshot.data();
-        totalProfits = parseFloat(wallet.totalProfit || 0);
-        refEarnings = parseFloat(wallet.referralEarnings || 0);
-    }
+    const totalProfits = parseFloat(wallet.totalProfit || 0);
+    const refEarnings = parseFloat(wallet.referralEarnings || 0);
 
     const gradientTrading = ctx.createLinearGradient(0, 0, 0, 200);
     gradientTrading.addColorStop(0, 'rgba(0, 210, 255, 0.4)');
@@ -218,8 +255,15 @@ const logoutBtn = document.getElementById("btnLogoutBtn");
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         if (confirm("Are you sure you want to logout?")) {
-            await signOut(auth);
-            window.location.href = "login.html";
+            try {
+                // Clear state caching upon signout
+                cachedUserProfile = null;
+                cachedWalletData = null;
+                await signOut(auth);
+                window.location.href = "login.html";
+            } catch (error) {
+                console.error("Logout failed:", error);
+            }
         }
     });
 }

@@ -1,7 +1,7 @@
 // js/packages.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, doc, getDoc, getDocs, setDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, doc, getDoc, getDocs, setDoc, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let userWalletBalance = 0;
 
@@ -13,28 +13,41 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     try {
-        await fetchWalletBalance(user.uid);
-        await fetchPackages();
-        await fetchPurchaseHistory(user.uid);
+        // Fetch all dependencies concurrently to speed up initialization
+        await Promise.all([
+            fetchWalletBalance(user.uid),
+            fetchPackages(),
+            fetchPurchaseHistory(user.uid)
+        ]);
     } catch (error) {
-        console.error("Initialization Error:", error);
+        console.error("Initialization Error on packages page:", error);
     }
 });
 
 // 1. Fetch User Current Wallet Balance
 async function fetchWalletBalance(uid) {
-    const walletDocRef = doc(db, "wallets", uid);
-    const docSnap = await getDoc(walletDocRef);
-    if (docSnap.exists()) {
-        userWalletBalance = parseFloat(docSnap.data().availableBalance || 0);
-        document.getElementById("lblWalletBalance").innerText = userWalletBalance.toFixed(2);
+    try {
+        const walletDocRef = doc(db, "wallets", uid);
+        const docSnap = await getDoc(walletDocRef);
+        
+        if (docSnap.exists()) {
+            userWalletBalance = parseFloat(docSnap.data().availableBalance || 0);
+            const balanceLabel = document.getElementById("lblWalletBalance");
+            if (balanceLabel) {
+                balanceLabel.innerText = userWalletBalance.toFixed(2);
+            }
+        }
+    } catch (error) {
+        console.error("Error fetching wallet balance:", error);
     }
 }
 
 // 2. Fetch Active Packages from Firestore
 async function fetchPackages() {
     const container = document.getElementById("packagesContainer");
-    container.innerHTML = ""; // Clear loader
+    if (!container) return;
+
+    container.innerHTML = ""; // Clear active state loader
 
     try {
         const querySnapshot = await getDocs(collection(db, "packages"));
@@ -52,11 +65,11 @@ async function fetchPackages() {
             const pack = docSnap.data();
             const packId = docSnap.id;
 
-            // Render Package Card
-            const col = document.createElement("col");
+            // Render Package Card with original design
+            const col = document.createElement("div");
             col.className = "col-md-6 col-lg-4";
             col.innerHTML = `
-                <div class="p-4 rounded-4 h-100 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-color); relative">
+                <div class="p-4 rounded-4 h-100 text-center" style="background: var(--bg-secondary); border: 1px solid var(--border-color); position: relative">
                     <h4 class="text-white fw-bold mb-2">${pack.packageName}</h4>
                     <p class="text-muted small mb-3">${pack.description || 'Premium ROI Plan'}</p>
                     <hr style="border-color: var(--border-color)">
@@ -73,9 +86,9 @@ async function fetchPackages() {
             container.appendChild(col);
         });
 
-        // Attach action listeners to Buy Buttons
+        // Safe attachment of actions to Buy Buttons
         document.querySelectorAll(".btn-buy").forEach((btn) => {
-            btn.addEventListener("click", (e) => {
+            btn.addEventListener("click", () => {
                 const packageId = btn.getAttribute("data-id");
                 const price = parseFloat(btn.getAttribute("data-price"));
                 const name = btn.getAttribute("data-name");
@@ -84,6 +97,7 @@ async function fetchPackages() {
         });
 
     } catch (err) {
+        console.error("Error retrieving packages:", err);
         container.innerHTML = `<div class="text-center text-danger py-4 col-12">Failed to load packages: ${err.message}</div>`;
     }
 }
@@ -102,17 +116,22 @@ async function handlePurchaseRequest(packageId, price, packageName) {
     if (!confirmBuy) return;
 
     try {
-        // Create standard Transaction structure for security checks
         const transRef = doc(collection(db, "transactions"));
+        
+        const currentDate = new Date();
+        const dateStr = currentDate.toLocaleDateString();
+        const timeStr = currentDate.toLocaleTimeString();
+        const timestampStr = currentDate.toISOString();
+
         const newTransaction = {
             transactionId: transRef.id,
             uid: user.uid,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString(),
-            timestamp: new Date().toISOString(),
-            type: "Package Purchased",
+            date: dateStr,
+            time: timeStr,
+            timestamp: timestampStr,
+            type: "Package Purchased", // Verified match in transaction rules configuration
             amount: price,
-            status: "Pending", // Admin Panel approves it to initiate ROI
+            status: "Pending", // Pending is verified in security rules updates
             packageName: packageName,
             packageId: packageId
         };
@@ -121,53 +140,50 @@ async function handlePurchaseRequest(packageId, price, packageName) {
 
         alert("Purchase request submitted successfully! It is pending admin approval.");
         
-        // Refresh History and Wallet values on page
-        await fetchWalletBalance(user.uid);
-        await fetchPurchaseHistory(user.uid);
+        // Parallel data refresh
+        await Promise.all([
+            fetchWalletBalance(user.uid),
+            fetchPurchaseHistory(user.uid)
+        ]);
 
     } catch (error) {
+        console.error("Error during purchase execution:", error);
         alert("Transaction Failed: " + error.message);
     }
 }
 
 // 4. Fetch User Purchase Requests from Transactions Collection
-// js/packages.js - Updated fetchPurchaseHistory function to avoid Index error
-
 async function fetchPurchaseHistory(uid) {
     const tbody = document.getElementById("historyTableBody");
-    tbody.innerHTML = ""; // Clear loader
+    if (!tbody) return;
 
-    // Simplified index-free query
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Loading history...</td></tr>`;
+
+    // High performance server-side filtering on 'type' and 'limit' to prevent billing leaks
     const historyQuery = query(
         collection(db, "transactions"),
-        where("uid", "==", uid)
+        where("uid", "==", uid),
+        where("type", "==", "Package Purchased"),
+        limit(50)
     );
 
     try {
         const querySnapshot = await getDocs(historyQuery);
-
-        // Fetch docs and filter/sort in memory to avoid Firebase Composite Index requirement
         const txDocs = [];
+
         querySnapshot.forEach((docSnap) => {
-            const tx = docSnap.data();
-            // Sirf package purchases items save karenge
-            if (tx.type === "Package Purchased") {
-                txDocs.push(tx);
-            }
+            txDocs.push(docSnap.data());
         });
 
-        // Latest transactions ko sabse pehle dikhane ke liye sort karenge (descending)
-        txDocs.sort((a, b) => {
-            const timeA = new Date(a.timestamp || 0);
-            const timeB = new Date(b.timestamp || 0);
-            return timeB - timeA;
-        });
+        // In-memory descending order sorting of filtered subset
+        txDocs.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
 
         if (txDocs.length === 0) {
             tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No purchase requests submitted yet.</td></tr>`;
             return;
         }
 
+        tbody.innerHTML = "";
         txDocs.forEach((tx) => {
             let statusBadge = '';
             if (tx.status === "Approved") {
@@ -178,22 +194,25 @@ async function fetchPurchaseHistory(uid) {
                 statusBadge = `<span class="badge-status badge-rejected">${tx.status || "Rejected"}</span>`;
             }
 
+            const truncatedTxId = tx.transactionId ? `${tx.transactionId.substring(0, 10)}...` : "---";
+            const truncatedPackId = tx.packageId ? tx.packageId.substring(0, 6) : 'N/A';
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td class="small text-muted text-uppercase">${tx.transactionId.substring(0, 10)}...</td>
+                <td class="small text-muted text-uppercase">${truncatedTxId}</td>
                 <td>
                     <strong class="text-white d-block">${tx.packageName || 'ROI Investment'}</strong>
-                    <span class="text-muted small">Package ID: ${tx.packageId ? tx.packageId.substring(0, 6) : 'N/A'}</span>
+                    <span class="text-muted small">Package ID: ${truncatedPackId}</span>
                 </td>
                 <td class="fw-bold text-info">$${parseFloat(tx.amount || 0).toFixed(2)}</td>
-                <td class="small text-muted">${tx.date}<br>${tx.time || ""}</td>
+                <td class="small text-muted">${tx.date || "---"}<br>${tx.time || ""}</td>
                 <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);
         });
 
     } catch (err) {
+        console.error("Error retrieving purchase transactions:", err);
         tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Error loading purchase history: ${err.message}</td></tr>`;
-        console.error(err);
     }
 }

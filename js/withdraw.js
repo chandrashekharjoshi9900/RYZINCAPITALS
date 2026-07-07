@@ -1,7 +1,7 @@
 // js/withdraw.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, doc, setDoc, getDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let userAvailableBalance = 0;
 const withdrawForm = document.getElementById("withdrawForm");
@@ -14,116 +14,172 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
     
-    await loadWalletBalance(user.uid);
-    await loadWithdrawalHistory(user.uid);
+    try {
+        // Execute fetches concurrently
+        await Promise.all([
+            loadWalletBalance(user.uid),
+            loadWithdrawalHistory(user.uid)
+        ]);
+    } catch (e) {
+        console.error("Failed to initialize withdrawal page dependencies:", e);
+    }
 });
 
 // 1. Fetch Current Available Wallet Balance
 async function loadWalletBalance(uid) {
-    const walletDocRef = doc(db, "wallets", uid);
-    const docSnap = await getDoc(walletDocRef);
-    if (docSnap.exists()) {
-        userAvailableBalance = parseFloat(docSnap.data().availableBalance || 0);
-        document.getElementById("lblAvailableBalance").innerText = userAvailableBalance.toFixed(2);
+    try {
+        const walletDocRef = doc(db, "wallets", uid);
+        const docSnap = await getDoc(walletDocRef);
+        
+        if (docSnap.exists()) {
+            userAvailableBalance = parseFloat(docSnap.data().availableBalance || 0);
+            const balanceLabel = document.getElementById("lblAvailableBalance");
+            if (balanceLabel) {
+                balanceLabel.innerText = userAvailableBalance.toFixed(2);
+            }
+        }
+    } catch (error) {
+        console.error("Error retrieving wallet balances:", error);
     }
 }
 
 // 2. Submit Withdrawal Request Form Handler
-withdrawForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+if (withdrawForm) {
+    withdrawForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const user = auth.currentUser;
-    if (!user) return;
+        const user = auth.currentUser;
+        if (!user) return;
 
-    const amount = parseFloat(document.getElementById("withdrawAmount").value);
-    const payoutAddress = document.getElementById("payoutAddress").value.trim();
+        const amountInput = document.getElementById("withdrawAmount");
+        const payoutInput = document.getElementById("payoutAddress");
 
-    // Check Balance Rules
-    if (amount < 10) {
-        alert("The minimum withdrawal amount is $10.00.");
-        return;
-    }
+        if (!amountInput || !payoutInput) return;
 
-    if (amount > userAvailableBalance) {
-        alert(`Insufficient funds! Your available balance is $${userAvailableBalance.toFixed(2)} but you requested $${amount.toFixed(2)}.`);
-        return;
-    }
+        const amount = parseFloat(amountInput.value);
+        const payoutAddress = payoutInput.value.trim();
 
-    const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)} to address: \n\n${payoutAddress}?`);
-    if (!confirmWithdraw) return;
+        // Check Balance Rules
+        if (isNaN(amount) || amount < 10) {
+            alert("The minimum withdrawal amount is $10.00.");
+            return;
+        }
 
-    btnSubmitWithdraw.disabled = true;
-    btnSubmitWithdraw.innerText = "Submitting request...";
+        if (amount > userAvailableBalance) {
+            alert(`Insufficient funds! Your available balance is $${userAvailableBalance.toFixed(2)} but you requested $${amount.toFixed(2)}.`);
+            return;
+        }
 
-    try {
-        // Create withdrawal transaction
-        const withdrawRef = doc(collection(db, "withdrawals"));
-        const newWithdrawal = {
-            withdrawId: withdrawRef.id,
-            uid: user.uid,
-            amount: amount,
-            walletAddress: payoutAddress,
-            status: "Pending", // Admin Panel handles confirmation & actual balance deduction
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString(),
-            timestamp: new Date().toISOString()
-        };
+        if (!payoutAddress) {
+            alert("Please enter a valid payout wallet address.");
+            return;
+        }
 
-        await setDoc(withdrawRef, newWithdrawal);
+        const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)} to address: \n\n${payoutAddress}?`);
+        if (!confirmWithdraw) return;
 
-        // Record a copy inside the centralized Ledger System
-        const transRef = doc(collection(db, "transactions"));
-        await setDoc(transRef, {
-            transactionId: transRef.id,
-            uid: user.uid,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString(),
-            timestamp: new Date().toISOString(),
-            type: "Withdrawal Request",
-            amount: amount,
-            status: "Pending"
-        });
+        if (btnSubmitWithdraw) {
+            btnSubmitWithdraw.disabled = true;
+            btnSubmitWithdraw.innerText = "Submitting request...";
+        }
 
-        alert("Withdrawal request submitted successfully! Pending verification by admin.");
-        
-        withdrawForm.reset();
-        await loadWalletBalance(user.uid);
-        await loadWithdrawalHistory(user.uid);
+        try {
+            // Generate IDs
+            const withdrawRef = doc(collection(db, "withdrawals"));
+            const transRef = doc(collection(db, "transactions"));
 
-    } catch (error) {
-        alert("Request Failed: " + error.message);
-    } finally {
-        btnSubmitWithdraw.disabled = false;
-        btnSubmitWithdraw.innerText = "Submit Payout Request";
-    }
-});
+            const currentDate = new Date();
+            const dateStr = currentDate.toLocaleDateString();
+            const timeStr = currentDate.toLocaleTimeString();
+            const timestampStr = currentDate.toISOString();
 
-// 3. Load User Withdrawal Requests History (Index-Free JS Sorting)
+            const newWithdrawal = {
+                withdrawId: withdrawRef.id,
+                uid: user.uid,
+                amount: amount,
+                walletAddress: payoutAddress,
+                status: "Pending", // Direct pending write allowed by security rules
+                date: dateStr,
+                time: timeStr,
+                timestamp: timestampStr
+            };
+
+            const newTransaction = {
+                transactionId: transRef.id,
+                uid: user.uid,
+                date: dateStr,
+                time: timeStr,
+                timestamp: timestampStr,
+                type: "Withdrawal Request", // Allowed type within transaction security validation
+                amount: amount,
+                status: "Pending"
+            };
+
+            // Write database logs in parallel
+            await Promise.all([
+                setDoc(withdrawRef, newWithdrawal),
+                setDoc(transRef, newTransaction)
+            ]);
+
+            alert("Withdrawal request submitted successfully! Pending verification by admin.");
+            
+            withdrawForm.reset();
+            
+            // Parallel update of balance and history views
+            await Promise.all([
+                loadWalletBalance(user.uid),
+                loadWithdrawalHistory(user.uid)
+            ]);
+
+        } catch (error) {
+            console.error("Withdrawal request failed:", error);
+            alert("Request Failed: " + error.message);
+        } finally {
+            if (btnSubmitWithdraw) {
+                btnSubmitWithdraw.disabled = false;
+                btnSubmitWithdraw.innerText = "Submit Payout Request";
+            }
+        }
+    });
+}
+
+// 3. Load User Withdrawal Requests History (Capped / JS sorted)
 async function loadWithdrawalHistory(uid) {
     const tbody = document.getElementById("withdrawTableBody");
-    tbody.innerHTML = ""; // Clear loader values
+    if (!tbody) return;
 
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Loading payout history...</td></tr>`; 
+
+    // Imposed limit(50) to optimize billing costs and application memory
     const withdrawQuery = query(
         collection(db, "withdrawals"),
-        where("uid", "==", uid)
+        where("uid", "==", uid),
+        limit(50)
     );
 
     try {
         const querySnapshot = await getDocs(withdrawQuery);
-
         const withdrawals = [];
+
         querySnapshot.forEach((doc) => {
-            withdrawals.push(doc.data());
+            if (doc.exists()) {
+                withdrawals.push(doc.data());
+            }
         });
 
-        // Sort descending in Javascript
-        withdrawals.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+        // Safe in-memory sorting descending by creation timestamp
+        withdrawals.sort((a, b) => {
+            const timestampA = a.timestamp ? new Date(a.timestamp) : new Date(a.date + ' ' + (a.time || ''));
+            const timestampB = b.timestamp ? new Date(b.timestamp) : new Date(b.date + ' ' + (b.time || ''));
+            return timestampB - timestampA;
+        });
 
         if (withdrawals.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No withdrawals recorded yet.</td></tr>`;
             return;
         }
 
+        tbody.innerHTML = "";
         withdrawals.forEach((wd) => {
             let statusBadge = '';
             if (wd.status === "Approved") {
@@ -134,18 +190,23 @@ async function loadWithdrawalHistory(uid) {
                 statusBadge = `<span class="badge-status badge-rejected">${wd.status || "Rejected"}</span>`;
             }
 
+            const dateStr = wd.date || "---";
+            const timeStr = wd.time || "";
+            const addressStr = wd.walletAddress || "N/A";
+            const amountNum = parseFloat(wd.amount || 0).toFixed(2);
+
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td class="small text-muted">${wd.date}<br>${wd.time || ""}</td>
-                <td><span class="text-white text-break font-monospace small">${wd.walletAddress}</span></td>
-                <td class="fw-bold text-info">$${parseFloat(wd.amount || 0).toFixed(2)}</td>
+                <td class="small text-muted">${dateStr}<br>${timeStr}</td>
+                <td><span class="text-white text-break font-monospace small">${addressStr}</span></td>
+                <td class="fw-bold text-info">$${amountNum}</td>
                 <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);
         });
 
     } catch (error) {
+        console.error("Payout history rendering error:", error);
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">Error loading payout history: ${error.message}</td></tr>`;
-        console.error(error);
     }
 }

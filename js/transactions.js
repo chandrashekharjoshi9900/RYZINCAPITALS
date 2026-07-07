@@ -1,7 +1,7 @@
 // js/transactions.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let allTransactions = []; // Holds all user tx records in local memory
 const filterTypeSelect = document.getElementById("filterType");
@@ -20,11 +20,18 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// 1. Fetch all user transactions in memory (index-free design)
+// 1. Fetch all user transactions in memory (index-free design, capped for scale)
 async function loadAllTransactions(uid) {
+    const tbody = document.getElementById("ledgerTableBody");
+    if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Loading transactions history...</td></tr>`;
+    }
+
+    // Capped at 300 records to prevent extreme read overhead at production scale
     const q = query(
         collection(db, "transactions"),
-        where("uid", "==", uid)
+        where("uid", "==", uid),
+        limit(300)
     );
 
     try {
@@ -32,43 +39,49 @@ async function loadAllTransactions(uid) {
         allTransactions = [];
 
         querySnapshot.forEach((docSnap) => {
-            allTransactions.push(docSnap.data());
+            if (docSnap.exists()) {
+                allTransactions.push(docSnap.data());
+            }
         });
 
-        // Default: Sort descending (newest transactions first)
+        // Sort descending (newest transactions first)
         sortTransactionsInMemory();
 
         // Initial table population
         populateLedgerTable(allTransactions);
 
     } catch (error) {
-        document.getElementById("ledgerTableBody").innerHTML = `
-            <tr><td colspan="5" class="text-center text-danger py-4">Error loading ledger items: ${error.message}</td></tr>`;
+        console.error("Error fetching transactions list:", error);
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-4">Error loading ledger items: ${error.message}</td></tr>`;
+        }
     }
 }
 
-// Helper: Sort transactions list by timestamp
+// Helper: Sort transactions list by timestamp cleanly
 function sortTransactionsInMemory() {
     allTransactions.sort((a, b) => {
-        const dateA = new Date(a.timestamp || a.date + ' ' + (a.time || ''));
-        const dateB = new Date(b.timestamp || b.date + ' ' + (b.time || ''));
-        return dateB - dateA;
+        const timestampA = a.timestamp ? new Date(a.timestamp) : new Date(a.date + ' ' + (a.time || ''));
+        const timestampB = b.timestamp ? new Date(b.timestamp) : new Date(b.date + ' ' + (b.time || ''));
+        return timestampB - timestampA;
     });
 }
 
 // 2. Render list content dynamically with filtering options
 function populateLedgerTable(transactionsList) {
     const tbody = document.getElementById("ledgerTableBody");
+    if (!tbody) return;
+
     tbody.innerHTML = ""; // Clear loader/previous data
 
     if (transactionsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No matching records found in database.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">No matching records found.</td></tr>`;
         return;
     }
 
     transactionsList.forEach((tx) => {
         let statusBadge = '';
-        if (tx.status === "Approved" || tx.status === "Approved") {
+        if (tx.status === "Approved") {
             statusBadge = `<span class="badge-status badge-approved">Approved</span>`;
         } else if (tx.status === "Pending") {
             statusBadge = `<span class="badge-status badge-pending">Pending</span>`;
@@ -76,12 +89,18 @@ function populateLedgerTable(transactionsList) {
             statusBadge = `<span class="badge-status badge-rejected">${tx.status || "Rejected"}</span>`;
         }
 
+        const transactionIdStr = tx.transactionId || "---";
+        const typeStr = tx.type || "N/A";
+        const dateStr = tx.date || "---";
+        const timeStr = tx.time || "";
+        const amountNum = parseFloat(tx.amount || 0).toFixed(2);
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td class="font-monospace text-muted small text-uppercase">${tx.transactionId || "---"}</td>
-            <td><strong class="text-white">${tx.type}</strong></td>
-            <td class="small text-muted">${tx.date}<br>${tx.time || ""}</td>
-            <td class="fw-bold text-info">$${parseFloat(tx.amount || 0).toFixed(2)}</td>
+            <td class="font-monospace text-muted small text-uppercase">${transactionIdStr}</td>
+            <td><strong class="text-white">${typeStr}</strong></td>
+            <td class="small text-muted">${dateStr}<br>${timeStr}</td>
+            <td class="fw-bold text-info">$${amountNum}</td>
             <td>${statusBadge}</td>
         `;
         tbody.appendChild(tr);
@@ -89,35 +108,38 @@ function populateLedgerTable(transactionsList) {
 }
 
 // 3. Dropdown Change Event Listener for in-memory dynamic filtering
-filterTypeSelect.addEventListener("change", () => {
-    const selectedFilter = filterTypeSelect.value;
-    
-    if (selectedFilter === "ALL") {
-        populateLedgerTable(allTransactions);
-        return;
-    }
+if (filterTypeSelect) {
+    filterTypeSelect.addEventListener("change", () => {
+        const selectedFilter = filterTypeSelect.value;
+        
+        if (selectedFilter === "ALL") {
+            populateLedgerTable(allTransactions);
+            return;
+        }
 
-    // Client-side Javascript filters mapping
-    const filtered = allTransactions.filter((tx) => {
-        const typeNormalized = tx.type.toUpperCase();
+        // Client-side mapping
+        const filtered = allTransactions.filter((tx) => {
+            if (!tx.type) return false;
+            const typeNormalized = tx.type.toUpperCase();
 
-        if (selectedFilter === "DEPOSIT") {
-            return typeNormalized.includes("DEPOSIT");
-        }
-        if (selectedFilter === "WITHDRAW") {
-            return typeNormalized.includes("WITHDRAW") || typeNormalized.includes("PAYOUT");
-        }
-        if (selectedFilter === "PACKAGE") {
-            return typeNormalized.includes("PACKAGE") || typeNormalized.includes("PURCHASE");
-        }
-        if (selectedFilter === "COMMISSION") {
-            return typeNormalized.includes("REFERRAL") || typeNormalized.includes("COMMISSION");
-        }
-        if (selectedFilter === "PROFIT") {
-            return typeNormalized.includes("PROFIT") || typeNormalized.includes("ROI") || typeNormalized.includes("RETURNS");
-        }
-        return false;
+            if (selectedFilter === "DEPOSIT") {
+                return typeNormalized.includes("DEPOSIT");
+            }
+            if (selectedFilter === "WITHDRAW") {
+                return typeNormalized.includes("WITHDRAW") || typeNormalized.includes("PAYOUT");
+            }
+            if (selectedFilter === "PACKAGE") {
+                return typeNormalized.includes("PACKAGE") || typeNormalized.includes("PURCHASE");
+            }
+            if (selectedFilter === "COMMISSION") {
+                return typeNormalized.includes("REFERRAL") || typeNormalized.includes("COMMISSION");
+            }
+            if (selectedFilter === "PROFIT") {
+                return typeNormalized.includes("PROFIT") || typeNormalized.includes("ROI") || typeNormalized.includes("RETURNS");
+            }
+            return false;
+        });
+
+        populateLedgerTable(filtered);
     });
-
-    populateLedgerTable(filtered);
-});
+}

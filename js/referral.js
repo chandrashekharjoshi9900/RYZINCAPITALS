@@ -1,7 +1,7 @@
 // js/referral.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc, getDocs, collection, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, getDoc, getDocs, collection, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Auth State Monitor
 onAuthStateChanged(auth, async (user) => {
@@ -11,21 +11,46 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     try {
-        await loadReferralDetails(user.uid);
-        await loadReferralCommissions(user.uid);
-        await loadReferralsNetworkList(user.uid);
+        // Execute operations concurrently to improve page response time
+        await Promise.all([
+            loadReferralDetails(user.uid),
+            loadReferralCommissions(user.uid),
+            loadReferralsNetworkList(user.uid)
+        ]);
     } catch (e) {
-        console.error("Referrals Module Error:", e);
+        console.error("Referrals Module Error during load:", e);
     }
 });
 
-// 1. Fetch user referral attributes and generate invitation links
+// 1. Fetch user referral attributes (with localized caching) and generate invitation links
 async function loadReferralDetails(uid) {
-    const userDocRef = doc(db, "users", uid);
-    const docSnap = await getDoc(userDocRef);
+    let userData = null;
+    const cachedProfile = sessionStorage.getItem("user_profile");
 
-    if (docSnap.exists()) {
-        const userData = docSnap.data();
+    // Attempt to parse cached data from session storage to avoid a redundant Firestore read
+    if (cachedProfile) {
+        try {
+            userData = JSON.parse(cachedProfile);
+        } catch (e) {
+            console.error("Error parsing cached profile in referral module:", e);
+        }
+    }
+
+    // Fallback to database lookup if cache is not available
+    if (!userData) {
+        try {
+            const userDocRef = doc(db, "users", uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+                userData = docSnap.data();
+                sessionStorage.setItem("user_profile", JSON.stringify(userData));
+            }
+        } catch (error) {
+            console.error("Error retrieving user profile for referral module:", error);
+        }
+    }
+
+    if (userData) {
         const refCode = userData.referralCode || "---";
 
         // Dynamic Invitation Link formulation
@@ -33,41 +58,62 @@ async function loadReferralDetails(uid) {
         const refLink = `${domainUrl}/register.html?ref=${refCode}`;
 
         // Populate DOM elements
-        document.getElementById("lblRefCode").innerText = refCode;
-        document.getElementById("lblRefLink").innerText = refLink;
+        const lblRefCode = document.getElementById("lblRefCode");
+        const lblRefLink = document.getElementById("lblRefLink");
+        const btnCopyCode = document.getElementById("btnCopyCode");
+        const btnCopyLink = document.getElementById("btnCopyLink");
 
-        // Event listener for Copy buttons
-        document.getElementById("btnCopyCode").onclick = () => {
-            navigator.clipboard.writeText(refCode);
-            alert("Referral Code copied: " + refCode);
-        };
+        if (lblRefCode) lblRefCode.innerText = refCode;
+        if (lblRefLink) lblRefLink.innerText = refLink;
 
-        document.getElementById("btnCopyLink").onclick = () => {
-            navigator.clipboard.writeText(refLink);
-            alert("Invitation link copied to clipboard!");
-        };
+        // Event listener for Copy buttons with fallbacks
+        if (btnCopyCode) {
+            btnCopyCode.onclick = () => {
+                navigator.clipboard.writeText(refCode)
+                    .then(() => alert("Referral Code copied: " + refCode))
+                    .catch(() => alert("Failed to copy code automatically. Code: " + refCode));
+            };
+        }
+
+        if (btnCopyLink) {
+            btnCopyLink.onclick = () => {
+                navigator.clipboard.writeText(refLink)
+                    .then(() => alert("Invitation link copied to clipboard!"))
+                    .catch(() => alert("Failed to copy link automatically. Please copy it manually: " + refLink));
+            };
+        }
     }
 }
 
 // 2. Load total Referral earnings from wallet document
 async function loadReferralCommissions(uid) {
-    const walletRef = doc(db, "wallets", uid);
-    const docSnap = await getDoc(walletRef);
-    if (docSnap.exists()) {
-        const wallet = docSnap.data();
-        document.getElementById("statRefEarnings").innerText = parseFloat(wallet.referralEarnings || 0).toFixed(2);
+    const statRefEarnings = document.getElementById("statRefEarnings");
+    if (!statRefEarnings) return;
+
+    try {
+        const walletRef = doc(db, "wallets", uid);
+        const docSnap = await getDoc(walletRef);
+        if (docSnap.exists()) {
+            const wallet = docSnap.data();
+            statRefEarnings.innerText = parseFloat(wallet.referralEarnings || 0).toFixed(2);
+        }
+    } catch (error) {
+        console.error("Error retrieving wallet commissions:", error);
     }
 }
 
 // 3. Load Referred Users Network list (Index-free, secure)
 async function loadReferralsNetworkList(uid) {
     const tbody = document.getElementById("referralsTableBody");
-    tbody.innerHTML = ""; // Clear loader statement
+    if (!tbody) return;
 
-    // Query users where referredBy equals current uid
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Loading referral list...</td></tr>`; 
+
+    // Query users where referredBy equals current uid (guarded with limit to optimize scale billing)
     const networkQuery = query(
         collection(db, "users"),
-        where("referredBy", "==", uid)
+        where("referredBy", "==", uid),
+        limit(200)
     );
 
     try {
@@ -79,12 +125,13 @@ async function loadReferralsNetworkList(uid) {
 
         if (querySnapshot.empty) {
             tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">No direct referrals recorded yet.</td></tr>`;
-            document.getElementById("statTotalRefs").innerText = "0";
-            document.getElementById("statActiveRefs").innerText = "0";
-            document.getElementById("statInactiveRefs").innerText = "0";
+            updateMetricDisplay("statTotalRefs", "0");
+            updateMetricDisplay("statActiveRefs", "0");
+            updateMetricDisplay("statInactiveRefs", "0");
             return;
         }
 
+        tbody.innerHTML = "";
         querySnapshot.forEach((docSnap) => {
             total++;
             const refUser = docSnap.data();
@@ -104,20 +151,32 @@ async function loadReferralsNetworkList(uid) {
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td class="font-monospace text-muted small text-uppercase">${refUser.userId || "---"}</td>
-                <td><strong class="text-white">${refUser.username || "---"}</strong><br><span class="text-muted small">${refUser.fullName || ""}</span></td>
+                <td>
+                    <strong class="text-white">${refUser.username || "---"}</strong>
+                    <br>
+                    <span class="text-muted small">${refUser.fullName || ""}</span>
+                </td>
                 <td class="small text-muted">${joinedDate}</td>
                 <td>${statusBadge}</td>
             `;
             tbody.appendChild(tr);
         });
 
-        // Set global metrics counting
-        document.getElementById("statTotalRefs").innerText = total;
-        document.getElementById("statActiveRefs").innerText = active;
-        document.getElementById("statInactiveRefs").innerText = inactive;
+        // Set global metrics counting safely
+        updateMetricDisplay("statTotalRefs", total.toString());
+        updateMetricDisplay("statActiveRefs", active.toString());
+        updateMetricDisplay("statInactiveRefs", inactive.toString());
 
     } catch (error) {
+        console.error("Error fetching network statistics:", error);
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-4">Error loading referrals list: ${error.message}</td></tr>`;
-        console.error(error);
+    }
+}
+
+// Utility function to update metric text safely
+function updateMetricDisplay(elementId, value) {
+    const el = document.getElementById(elementId);
+    if (el) {
+        el.innerText = value;
     }
 }
