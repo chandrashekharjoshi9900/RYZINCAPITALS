@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> IRAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -48,10 +49,10 @@
                 <p class="text-muted small mb-0">Trace all your deposits, withdrawals, package subscriptions and commissions below.</p>
             </div>
             
-            <!-- Dynamic Filter Dropdown -->
+            <!-- Dynamic Filter Dropdown aligned with theme variables -->
             <div class="d-flex align-items-center gap-2">
-                <span class="text-muted small text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter:</span>
-                <select class="form-control py-2 px-3 border-secondary bg-secondary text-white w-auto" id="filterType">
+                <span class="text-muted small text-nowrap"><i class="fa-solid fa-filter me-1 text-white"></i> Filter:</span>
+                <select class="form-control py-2 px-3 w-auto" id="filterType" style="background-color: var(--bg-primary) !important; border: 1px solid var(--accent-green) !important; color: #ffffff !important;">
                     <option value="ALL">Show All Activities</option>
                     <option value="DEPOSIT">Deposits Only</option>
                     <option value="WITHDRAW">Withdrawals Only</option>
