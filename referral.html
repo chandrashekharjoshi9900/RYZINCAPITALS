@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -41,9 +42,9 @@
 
     <div class="container py-5">
         <div class="row g-4 mb-5">
-            <!-- Share & Invite Box Card -->
+            <!-- Share & Invite Box Card with theme-aligned border -->
             <div class="col-lg-12">
-                <div class="p-5 rounded-4 border border-secondary" style="background: var(--bg-secondary);">
+                <div class="p-5 rounded-4 border" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
                     <div class="row align-items-center g-4">
                         <div class="col-md-7">
                             <h3 class="text-white fw-bold mb-2">Invite & Earn Commissions</h3>
@@ -51,19 +52,21 @@
                         </div>
                         <div class="col-md-5">
                             <!-- Referral Code Display -->
-                            <div class="p-3 mb-3 bg-dark rounded border border-secondary">
+                            <div class="p-3 mb-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block mb-1">Your Referral Code:</span>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <strong class="text-info fs-5" id="lblRefCode">Loading...</strong>
+                                    <!-- Replaced text-info with text-highlight (green) -->
+                                    <strong class="text-highlight fs-5" id="lblRefCode">Loading...</strong>
                                     <button class="btn btn-outline-info btn-sm" id="btnCopyCode"><i class="fa-solid fa-copy"></i> Copy</button>
                                 </div>
                             </div>
                             <!-- Referral Link Display -->
-                            <div class="p-3 bg-dark rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block mb-1">Your Referral Link:</span>
                                 <div class="d-flex justify-content-between align-items-center gap-2">
                                     <span class="text-muted small text-truncate" id="lblRefLink">Loading link...</span>
-                                    <button class="btn btn-info btn-sm text-dark fw-bold px-3" id="btnCopyLink"><i class="fa-solid fa-share-nodes"></i> Copy</button>
+                                    <!-- Replaced blue btn-info with btn-premium -->
+                                    <button class="btn btn-premium btn-sm fw-bold px-3" id="btnCopyLink" style="width: auto;"><i class="fa-solid fa-share-nodes"></i> Copy</button>
                                 </div>
                             </div>
                         </div>
@@ -77,7 +80,8 @@
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Total Referrals</div>
-                    <div class="dash-card-value text-info" id="statTotalRefs">0</div>
+                    <!-- Replaced text-info with text-white -->
+                    <div class="dash-card-value text-white" id="statTotalRefs">0</div>
                     <i class="fa-solid fa-users dash-card-icon"></i>
                 </div>
             </div>
@@ -91,14 +95,16 @@
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Inactive Referrals</div>
-                    <div class="dash-card-value text-danger" id="statInactiveRefs">0</div>
+                    <!-- Replaced red text-danger with text-white -->
+                    <div class="dash-card-value text-white" id="statInactiveRefs">0</div>
                     <i class="fa-solid fa-user-xmark dash-card-icon"></i>
                 </div>
             </div>
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Referral Earnings</div>
-                    <div class="dash-card-value text-warning">$<span id="statRefEarnings">0.00</span></div>
+                    <!-- Replaced text-warning with text-highlight (green) -->
+                    <div class="dash-card-value text-highlight">$<span id="statRefEarnings">0.00</span></div>
                     <i class="fa-solid fa-sack-dollar dash-card-icon"></i>
                 </div>
             </div>
@@ -108,7 +114,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="p-4 rounded-4 custom-table">
-                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-diagram-project text-info me-2"></i>My Referrals Network</h5>
+                    <!-- Replaced text-info icon color with white -->
+                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-diagram-project text-white me-2"></i>My Referrals Network</h5>
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
                             <thead>
