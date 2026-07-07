@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -44,14 +45,16 @@
             <!-- Left Column: Submit Withdrawal Request Form -->
             <div class="col-lg-5">
                 <div class="p-4 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-                    <h4 class="text-white fw-bold mb-3"><i class="fa-solid fa-circle-dollar-to-slot text-info me-2"></i>Request Withdrawal</h4>
+                    <!-- Replaced text-info icon with white -->
+                    <h4 class="text-white fw-bold mb-3"><i class="fa-solid fa-circle-dollar-to-slot text-white me-2"></i>Request Withdrawal</h4>
                     <p class="text-muted small">Submit a withdrawal request. Funds will be sent directly to your submitted wallet address.</p>
                     <hr style="border-color: var(--border-color)">
 
-                    <!-- Current Balance Info Badge -->
-                    <div class="p-3 mb-4 rounded-3 bg-dark border border-secondary text-center">
+                    <!-- Current Balance Info Badge with pure black bg and subtle green border -->
+                    <div class="p-3 mb-4 rounded-3 border text-center" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                         <span class="text-muted small d-block mb-1">Your Available Balance:</span>
-                        <h3 class="text-info fw-bold mb-0">$<span id="lblAvailableBalance">0.00</span></h3>
+                        <!-- Replaced text-info with text-highlight (green) -->
+                        <h3 class="text-highlight fw-bold mb-0">$<span id="lblAvailableBalance">0.00</span></h3>
                     </div>
 
                     <form id="withdrawForm">
@@ -76,7 +79,8 @@
             <!-- Right Column: Past Withdrawal History Table -->
             <div class="col-lg-7">
                 <div class="p-4 rounded-4 custom-table h-100">
-                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>My Payout History</h5>
+                    <!-- Replaced text-info icon with white -->
+                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-clock-rotate-left text-white me-2"></i>My Payout History</h5>
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
                             <thead>
