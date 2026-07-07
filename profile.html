@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -44,18 +45,18 @@
             
             <!-- Left Side: Static Metadata Info -->
             <div class="col-lg-4">
-                <div class="p-4 rounded-4 text-center border border-secondary h-100" style="background: var(--bg-secondary);">
+                <div class="p-4 rounded-4 text-center border h-100" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
                     
-                    <!-- Clean Static Avatar Icon -->
+                    <!-- Clean Static Avatar Icon changed to theme green color -->
                     <div class="mb-4">
-                        <i class="fa-solid fa-user-shield text-info" style="font-size: 80px;"></i>
+                        <i class="fa-solid fa-user-shield text-highlight" style="font-size: 80px;"></i>
                     </div>
                     
                     <h5 class="text-white fw-bold mb-1" id="lblFullName">Loading Name...</h5>
                     <p class="text-muted small mb-4" id="lblEmail">user@example.com</p>
 
-                    <!-- Immutable Credentials Block -->
-                    <div class="text-start bg-dark p-3 rounded border border-secondary">
+                    <!-- Immutable Credentials Block aligned with black/green theme -->
+                    <div class="text-start p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                         <div class="mb-2">
                             <span class="text-muted small d-block">User ID (Permanent):</span>
                             <strong class="text-white font-monospace small" id="lblUserId">---</strong>
@@ -66,7 +67,8 @@
                         </div>
                         <div>
                             <span class="text-muted small d-block">My Referral Code:</span>
-                            <strong class="text-info font-monospace small" id="lblReferralCode">---</strong>
+                            <!-- Replaced text-info with text-highlight -->
+                            <strong class="text-highlight font-monospace small" id="lblReferralCode">---</strong>
                         </div>
                     </div>
                 </div>
@@ -75,8 +77,9 @@
             <!-- Right Side: Edit Form & Password Switch -->
             <div class="col-lg-8">
                 <!-- Box 1: Profile Editor Form -->
-                <div class="p-4 rounded-4 border border-secondary mb-4" style="background: var(--bg-secondary);">
-                    <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-user-pen text-info me-2"></i>Edit Profile Details</h5>
+                <div class="p-4 rounded-4 border mb-4" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
+                    <!-- Replaced text-info icon color with white -->
+                    <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-user-pen text-white me-2"></i>Edit Profile Details</h5>
                     <form id="profileForm">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -99,8 +102,9 @@
                 </div>
 
                 <!-- Box 2: Change Password -->
-                <div class="p-4 rounded-4 border border-secondary" style="background: var(--bg-secondary);">
-                    <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-key text-info me-2"></i>Change Security Password</h5>
+                <div class="p-4 rounded-4 border" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
+                    <!-- Replaced text-info icon color with white -->
+                    <h5 class="text-white fw-bold mb-3"><i class="fa-solid fa-key text-white me-2"></i>Change Security Password</h5>
                     <form id="passwordForm">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -112,7 +116,8 @@
                                 <input type="password" class="form-control" id="confirmNewPassword" placeholder="Confirm new password" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-outline-info border-secondary mt-4 w-auto px-4" id="btnUpdatePassword">
+                        <!-- Updated class to match current button outline definitions -->
+                        <button type="submit" class="btn btn-outline-info mt-4 w-auto px-4" id="btnUpdatePassword">
                             <i class="fa-solid fa-shield-halved me-1"></i> Update Password
                         </button>
                     </form>
