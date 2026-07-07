@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -41,17 +42,19 @@
 
     <div class="container py-5">
         
-        <!-- Big Premium Wallet Hub Card -->
-        <div class="p-5 rounded-4 mb-5 text-center position-relative overflow-hidden border border-secondary" style="background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);">
+        <!-- Big Premium Wallet Hub Card with pure black bg and subtle green border -->
+        <div class="p-5 rounded-4 mb-5 text-center position-relative overflow-hidden border" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
             <div class="position-relative z-1">
                 <span class="text-muted small text-uppercase letter-spacing-1 d-block mb-2">Net spendable balance</span>
-                <h1 class="text-white fw-bold mb-3" style="font-size: 52px; background: linear-gradient(135deg, var(--accent-blue) 0%, #ffffff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <!-- Replaced gradient typography with solid green accent color -->
+                <h1 class="fw-bold mb-3 text-highlight" style="font-size: 52px;">
                     $<span id="lblNetWorth">0.00</span>
                 </h1>
                 <p class="text-muted small mb-4">Total capital ready for investments or instant payouts.</p>
                 <div class="d-flex justify-content-center gap-3">
                     <a href="deposit.html" class="btn btn-premium px-4 py-2 w-auto"><i class="fa-solid fa-plus-circle me-1"></i> Deposit Funds</a>
-                    <a href="withdraw.html" class="btn btn-outline-info px-4 py-2 w-auto border-secondary"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Cash Out</a>
+                    <!-- Replaced border-secondary with clean green outline button class -->
+                    <a href="withdraw.html" class="btn btn-outline-info px-4 py-2 w-auto"><i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Cash Out</a>
                 </div>
             </div>
         </div>
@@ -68,21 +71,24 @@
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Total Withdrawals</div>
-                    <div class="dash-card-value text-danger">$<span id="statTotalWithdraw">0.00</span></div>
+                    <!-- Replaced danger red with white -->
+                    <div class="dash-card-value text-white">$<span id="statTotalWithdraw">0.00</span></div>
                     <i class="fa-solid fa-arrow-up dash-card-icon"></i>
                 </div>
             </div>
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Trading Returns</div>
-                    <div class="dash-card-value text-info">$<span id="statTotalProfit">0.00</span></div>
+                    <!-- Replaced blue text-info with green text-highlight -->
+                    <div class="dash-card-value text-highlight">$<span id="statTotalProfit">0.00</span></div>
                     <i class="fa-solid fa-calculator dash-card-icon"></i>
                 </div>
             </div>
             <div class="col-sm-6 col-md-3">
                 <div class="dash-card">
                     <div class="dash-card-title">Referral Earnings</div>
-                    <div class="dash-card-value text-warning">$<span id="statReferralEarnings">0.00</span></div>
+                    <!-- Replaced orange text-warning with green text-highlight -->
+                    <div class="dash-card-value text-highlight">$<span id="statReferralEarnings">0.00</span></div>
                     <i class="fa-solid fa-award dash-card-icon"></i>
                 </div>
             </div>
@@ -93,8 +99,10 @@
             <div class="col-12">
                 <div class="p-4 rounded-4 custom-table">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="text-white mb-0 fw-bold"><i class="fa-solid fa-money-bill-transfer text-info me-2"></i>Recent Financial Activities</h5>
-                        <a href="transactions.html" class="small text-info">Full Ledger</a>
+                        <!-- Replaced text-info icon with white -->
+                        <h5 class="text-white mb-0 fw-bold"><i class="fa-solid fa-money-bill-transfer text-white me-2"></i>Recent Financial Activities</h5>
+                        <!-- Replaced text-info with text-highlight -->
+                        <a href="transactions.html" class="small text-highlight">Full Ledger</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
