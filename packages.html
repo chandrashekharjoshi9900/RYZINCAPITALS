@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -43,16 +44,19 @@
         <div class="text-center mb-5">
             <h2 class="fw-bold text-white mb-2">Investment Packages</h2>
             <p class="text-muted">Choose a plan that fits your target goals. Your earnings will start after approval.</p>
-            <div class="d-inline-flex align-items-center bg-secondary px-3 py-2 rounded-pill mt-1 border border-secondary">
+            <!-- Wallet Balance Pill style aligned with color rules -->
+            <div class="d-inline-flex align-items-center px-3 py-2 rounded-pill mt-1 border" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
                 <span class="text-muted small me-2">Wallet Balance:</span>
-                <strong class="text-info fw-bold">$<span id="lblWalletBalance">0.00</span></strong>
+                <!-- Replaced text-info with text-highlight (green) -->
+                <strong class="text-highlight fw-bold">$<span id="lblWalletBalance">0.00</span></strong>
             </div>
         </div>
 
         <!-- Packages Dynamic Grid -->
         <div class="row g-4 justify-content-center mb-5" id="packagesContainer">
             <div class="text-center py-5">
-                <div class="spinner-border text-info" role="status"></div>
+                <!-- Changed spinner-border to text-success (green) -->
+                <div class="spinner-border text-success" role="status"></div>
                 <p class="text-muted mt-2">Loading packages from database...</p>
             </div>
         </div>
@@ -61,7 +65,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="p-4 rounded-4 custom-table">
-                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Package Purchase History</h5>
+                    <!-- Replaced text-info icon color with white -->
+                    <h5 class="text-white mb-4 fw-bold"><i class="fa-solid fa-clock-rotate-left text-white me-2"></i>Package Purchase History</h5>
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
                             <thead>
