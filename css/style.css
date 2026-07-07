@@ -1,15 +1,15 @@
 /* css/style.css */
 :root {
-    --bg-primary: #0a0b0d;          /* Ultra premium warm obsidian black */
-    --bg-secondary: #111317;        /* Rayzin charcoal container card background */
-    --bg-tertiary: #1b1e24;         /* Rich slate-black for inputs and nav hovers */
-    --accent-blue: #00c25a;         /* Vibrant Rayzin emerald green */
-    --accent-purple: #008a3f;       /* Premium dark forest green gradient companion */
+    --bg-primary: #000000;          /* Pure Black Background */
+    --bg-secondary: #000000;        /* Pure Black Container Background */
+    --bg-tertiary: #000000;         /* Pure Black for inputs and nav hovers */
+    --accent-green: #16A34A;        /* Solid Primary Green */
+    --accent-green-hover: #15803D;  /* Slightly Darker Green for Hover states */
     --text-primary: #ffffff;        /* Crisp high-contrast white */
-    --text-secondary: #9fb1c0;      /* Highly visible cool silver-slate for small texts */
-    --border-color: rgba(255, 255, 255, 0.05); /* Soft premium boundary border */
-    --success: #00c25a;             /* Success state green */
-    --danger: #ff3b30;              /* Bright signal red for withdrawals */
+    --text-secondary: #ffffff;      /* All text must be white */
+    --border-color: rgba(22, 163, 74, 0.3); /* Subtle green border */
+    --success: #16A34A;             /* Success state green */
+    --danger: #ffffff;              /* Only green or white allowed (no red) */
 }
 
 body {
@@ -20,38 +20,36 @@ body {
     overflow-x: hidden;
 }
 
-/* Authentication Layout Glow */
+/* Authentication Layout (No Gradients) */
 .auth-container {
     min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: radial-gradient(circle at center, #022011 0%, var(--bg-primary) 100%);
+    background: var(--bg-primary);
 }
 
 .auth-card {
     background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--accent-green);
     border-radius: 16px;
     padding: 40px;
     width: 100%;
     max-width: 480px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 194, 90, 0.03);
+    box-shadow: none;
 }
 
 .auth-title {
     font-size: 28px;
     font-weight: 700;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--accent-blue), #ffffff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
 }
 
 /* Form inputs & select drop-downs - Highly legible text */
 .form-label {
-    color: var(--text-primary); /* Increased text visibility from secondary to primary */
+    color: var(--text-primary);
     font-size: 14px;
     font-weight: 600;
     margin-bottom: 8px;
@@ -59,7 +57,7 @@ body {
 
 .form-control, .form-select {
     background-color: var(--bg-tertiary) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important; /* Brighter border for crisp visibility */
+    border: 1px solid var(--accent-green) !important; /* Subtle green border */
     color: var(--text-primary) !important;
     border-radius: 8px;
     padding: 12px 16px;
@@ -68,30 +66,30 @@ body {
 }
 
 .form-control::placeholder {
-    color: #64748b !important;
+    color: rgba(255, 255, 255, 0.5) !important; /* White with opacity */
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: var(--accent-blue) !important;
-    box-shadow: 0 0 12px rgba(0, 194, 90, 0.18) !important;
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 0 12px rgba(22, 163, 74, 0.3) !important;
+    outline: none;
 }
 
-/* Rayzin Green Premium Action Button */
+/* Premium Solid Green Action Button (No Gradients) */
 .btn-premium {
-    background: var(--accent-blue);
-    color: #000000 !important; /* Bold black text on neon green for supreme readability */
+    background: var(--accent-green) !important;
+    color: #ffffff !important; /* White text color */
     border: none;
     font-weight: 700;
     padding: 12px 24px;
     border-radius: 8px;
-    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
     width: 100%;
 }
 
 .btn-premium:hover {
+    background-color: var(--accent-green-hover) !important;
     transform: translateY(-1px);
-    box-shadow: 0 5px 15px rgba(0, 194, 90, 0.35);
-    opacity: 0.95;
 }
 
 .btn-premium:active {
@@ -100,7 +98,7 @@ body {
 
 /* Links color corrections */
 a {
-    color: var(--accent-blue);
+    color: var(--accent-green);
     font-weight: 600;
     text-decoration: none;
     transition: color 0.2s;
@@ -110,29 +108,30 @@ a:hover {
     color: #ffffff;
 }
 
-/* High Contrast Pill Badges */
+/* High Contrast Status Badges (Green/White Only) */
 .badge-status {
     padding: 6px 14px;
-    border-radius: 6px; /* Modern flat rounded-corners (instead of round pills) */
+    border-radius: 6px;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-block;
 }
 .badge-pending { 
-    background: rgba(255, 255, 255, 0.08); 
+    background: transparent; 
     color: #ffffff; 
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid #ffffff;
 }
 .badge-approved { 
-    background: rgba(0, 194, 90, 0.12); 
-    color: #00ff73; 
-    border: 1px solid rgba(0, 194, 90, 0.2);
+    background: var(--accent-green); 
+    color: #ffffff; 
+    border: 1px solid var(--accent-green);
 }
 .badge-rejected { 
-    background: rgba(255, 59, 48, 0.12); 
-    color: #ff453a; 
-    border: 1px solid rgba(255, 59, 48, 0.2);
+    background: transparent; 
+    color: #ffffff; 
+    border: 1px solid #ffffff; /* Red replaced with white */
 }
 
 /* Header & Navigations bar details */
@@ -143,7 +142,7 @@ a:hover {
 }
 
 .nav-link-custom {
-    color: var(--text-secondary);
+    color: var(--text-primary);
     font-weight: 600;
     padding: 10px 16px;
     border-radius: 8px;
@@ -155,8 +154,8 @@ a:hover {
 
 .nav-link-custom:hover, .nav-link-custom.active {
     color: #ffffff;
-    background-color: var(--bg-tertiary);
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    background-color: var(--accent-green-hover);
+    border: 1px solid var(--accent-green);
 }
 
 /* Premium Rayzin Cards */
@@ -172,7 +171,7 @@ a:hover {
 
 .dash-card:hover {
     transform: translateY(-2px);
-    border-color: rgba(0, 194, 90, 0.2);
+    border-color: var(--accent-green);
 }
 
 .dash-card::before {
@@ -182,8 +181,7 @@ a:hover {
     left: 0;
     width: 4px;
     height: 100%;
-    background: var(--accent-blue);
-    opacity: 0.9;
+    background: var(--accent-green);
 }
 
 /* Card titles text legibility update */
@@ -192,14 +190,14 @@ a:hover {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--text-secondary); /* Restored high-contrast secondary color */
+    color: #ffffff; /* All text should be white */
     margin-bottom: 12px;
 }
 
 .dash-card-value {
     font-size: 28px;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--accent-green); /* Profits, amounts, success text can be green */
 }
 
 .dash-card-icon {
@@ -207,7 +205,7 @@ a:hover {
     right: 20px;
     bottom: 20px;
     font-size: 32px;
-    color: rgba(255, 255, 255, 0.02);
+    color: rgba(255, 255, 255, 0.1); /* White line icon opacity */
 }
 
 /* Clean Dark Table style updates */
@@ -220,7 +218,7 @@ a:hover {
 
 .custom-table th {
     background-color: var(--bg-tertiary) !important;
-    color: #ffffff !important; /* Brighter th text */
+    color: #ffffff !important;
     font-weight: 700;
     font-size: 13px;
     text-transform: uppercase;
@@ -238,9 +236,10 @@ a:hover {
     font-size: 14px;
 }
 
-/* Small muted description elements readability update */
+/* Muted description elements text update */
 .text-muted {
-    color: #8c9ba5 !important; /* Much brighter than normal muted text */
+    color: #ffffff !important; /* All text must be white */
+    opacity: 0.7; /* Use opacity instead of gray to maintain premium dark mode hierarchy */
     font-weight: 500;
 }
 
@@ -250,14 +249,25 @@ a:hover {
 
 /* Outline Buttons */
 .btn-outline-info {
-    color: var(--accent-blue) !important;
-    border-color: rgba(0, 194, 90, 0.25) !important;
+    color: var(--accent-green) !important;
+    border-color: var(--accent-green) !important;
     background-color: transparent !important;
     font-weight: 600;
 }
 
 .btn-outline-info:hover {
-    color: #000000 !important;
-    background-color: var(--accent-blue) !important;
-    border-color: var(--accent-blue) !important;
+    color: #ffffff !important;
+    background-color: var(--accent-green-hover) !important;
+    border-color: var(--accent-green-hover) !important;
+}
+
+/* Custom Highlight Class for amounts, profits, numbers */
+.text-highlight {
+    color: var(--accent-green) !important;
+}
+/* Navigation Bar Logo Medium Size Adjustment */
+.navbar-brand img {
+    height: 85px !important; /* साइज को 35px से बढ़ाकर 48px (मीडियम) किया गया है */
+    width: auto;
+    object-fit: contain;
 }
