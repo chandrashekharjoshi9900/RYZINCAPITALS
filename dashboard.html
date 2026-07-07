@@ -18,8 +18,9 @@
     <!-- Header / Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold text-white d-flex align-items-center gap-2" href="dashboard.html">
-                <i class="fa-solid fa-chart-line text-info"></i> RAYZIN CAPITALS
+            <!-- Logo Image Replacement (Replaced text based branding with logo) -->
+            <a class="navbar-brand d-flex align-items-center" href="dashboard.html">
+                <img src="logo.png" alt="Logo" style="height: 35px; width: auto; object-fit: contain;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -35,7 +36,8 @@
                     <li class="nav-item"><a class="nav-link-custom" href="transactions.html"><i class="fa-solid fa-list-check"></i> Ledger</a></li>
                     <li class="nav-item"><a class="nav-link-custom" href="profile.html"><i class="fa-solid fa-user-gear"></i> Profile</a></li>
                     <li class="nav-item ms-lg-3">
-                        <button class="btn btn-outline-danger btn-sm px-3 mt-2 mt-lg-0" id="btnLogoutBtn">
+                        <!-- Replaced outline-danger with outline-info (which maps to green in CSS) -->
+                        <button class="btn btn-outline-info btn-sm px-3 mt-2 mt-lg-0" id="btnLogoutBtn">
                             <i class="fa-solid fa-power-off me-1"></i> Logout
                         </button>
                     </li>
@@ -50,9 +52,10 @@
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
             <div>
                 <h4 class="mb-1 fw-bold text-white">Welcome, <span id="lblFullName">User</span></h4>
-                <p class="text-muted small mb-0">ID: <span id="lblUserId" class="text-info">Loading...</span> | Username: <span id="lblUsername">Loading...</span></p>
+                <p class="text-muted small mb-0">ID: <span id="lblUserId" class="text-highlight">Loading...</span> | Username: <span id="lblUsername">Loading...</span></p>
             </div>
-            <div class="bg-secondary px-3 py-2 rounded border border-secondary text-end">
+            <!-- Referral Code Box aligned with color theme rules -->
+            <div class="px-3 py-2 rounded border text-end" style="background: var(--bg-secondary); border-color: var(--border-color) !important;">
                 <span class="text-muted small d-block">Referral Code</span>
                 <strong class="text-white" id="lblReferralCode">---</strong>
             </div>
@@ -95,22 +98,23 @@
             <!-- Profits Breakdown -->
             <div class="col-lg-6">
                 <div class="p-4 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Profit Intervals</h6>
+                    <!-- Replaced text-info icon color with white -->
+                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-clock-rotate-left text-white me-2"></i>Profit Intervals</h6>
                     <div class="row text-center g-2">
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Daily</span>
                                 <h5 class="text-white mb-0 mt-1 fw-bold">$<span id="statDailyProfit">0.00</span></h5>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Weekly</span>
                                 <h5 class="text-white mb-0 mt-1 fw-bold">$<span id="statWeeklyProfit">0.00</span></h5>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Monthly</span>
                                 <h5 class="text-white mb-0 mt-1 fw-bold">$<span id="statMonthlyProfit">0.00</span></h5>
                             </div>
@@ -122,24 +126,26 @@
             <!-- Referral Counts Status -->
             <div class="col-lg-6">
                 <div class="p-4 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">
-                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-users text-info me-2"></i>Network Summary</h6>
+                    <!-- Replaced text-info icon color with white -->
+                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-users text-white me-2"></i>Network Summary</h6>
                     <div class="row text-center g-2">
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Direct</span>
-                                <h5 class="text-info mb-0 mt-1 fw-bold" id="statDirectRefs">0</h5>
+                                <h5 class="text-white mb-0 mt-1 fw-bold" id="statDirectRefs">0</h5>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Active</span>
-                                <h5 class="text-success mb-0 mt-1 fw-bold" id="statActiveRefs">0</h5>
+                                <h5 class="text-highlight mb-0 mt-1 fw-bold" id="statActiveRefs">0</h5>
                             </div>
                         </div>
                         <div class="col-4">
-                            <div class="bg-dark p-3 rounded border border-secondary">
+                            <div class="p-3 rounded border" style="background: var(--bg-primary); border-color: var(--border-color) !important;">
                                 <span class="text-muted small d-block">Inactive</span>
-                                <h5 class="text-danger mb-0 mt-1 fw-bold" id="statInactiveRefs">0</h5>
+                                <!-- Replaced red danger color with white -->
+                                <h5 class="text-white mb-0 mt-1 fw-bold" id="statInactiveRefs">0</h5>
                             </div>
                         </div>
                     </div>
@@ -152,7 +158,8 @@
             <!-- Chart.js Graph -->
             <div class="col-lg-6">
                 <div class="p-4 rounded-4" style="background: var(--bg-secondary); border: 1px solid var(--border-color); height: 100%;">
-                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-chart-area text-info me-2"></i>Performance Graph</h6>
+                    <!-- Replaced text-info icon color with white -->
+                    <h6 class="text-white mb-3 fw-bold"><i class="fa-solid fa-chart-area text-white me-2"></i>Performance Graph</h6>
                     <div style="position: relative; height: 260px;">
                         <canvas id="incomeChart"></canvas>
                     </div>
@@ -163,8 +170,10 @@
             <div class="col-lg-6">
                 <div class="p-4 rounded-4 custom-table h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="text-white mb-0 fw-bold"><i class="fa-solid fa-receipt text-info me-2"></i>Recent Ledger Activity</h6>
-                        <a href="transactions.html" class="small text-info">View All</a>
+                        <!-- Replaced text-info icon color with white -->
+                        <h6 class="text-white mb-0 fw-bold"><i class="fa-solid fa-receipt text-white me-2"></i>Recent Ledger Activity</h6>
+                        <!-- Replaced text-info link color with text-highlight (green) -->
+                        <a href="transactions.html" class="small text-highlight">View All</a>
                     </div>
                     <div class="table-responsive">
                         <table class="table mb-0 align-middle">
