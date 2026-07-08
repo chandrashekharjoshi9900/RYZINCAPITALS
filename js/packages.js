@@ -1,4 +1,3 @@
-// js/packages.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { collection, doc, getDoc, getDocs, setDoc, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -64,8 +63,10 @@ async function fetchPackages() {
         querySnapshot.forEach((docSnap) => {
             const pack = docSnap.data();
             const packId = docSnap.id;
+            // Capture percentage from template (defaulting to 0 if not defined)
+            const commissionPercent = pack.profitReferralCommissionPercentage || 0;
 
-            // Render Package Card with original design
+            // Render Package Card with original design (Price display issue fixed here)
             const col = document.createElement("div");
             col.className = "col-md-6 col-lg-4";
             col.innerHTML = `
@@ -75,10 +76,14 @@ async function fetchPackages() {
                     <hr style="border-color: var(--border-color)">
                     <div class="my-4">
                         <span class="text-muted small">Investment Price</span>
-                        <h2 class="text-white fw-bold my-1" style="font-size: 36px; background: linear-gradient(135deg, var(--accent-blue), #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">$${parseFloat(pack.price || 0).toFixed(2)}</h2>
+                        <h2 class="text-white fw-bold my-1" style="font-size: 36px;">$${parseFloat(pack.price || 0).toFixed(2)}</h2>
                         <span class="badge bg-dark border border-secondary text-info px-3 py-1 mt-2">${pack.duration} Days ROI</span>
                     </div>
-                    <button class="btn btn-premium mt-3 btn-buy" data-id="${packId}" data-price="${pack.price}" data-name="${pack.packageName}">
+                    <button class="btn btn-premium mt-3 btn-buy" 
+                        data-id="${packId}" 
+                        data-price="${pack.price}" 
+                        data-name="${pack.packageName}"
+                        data-commission="${commissionPercent}">
                         <i class="fa-solid fa-cart-shopping me-1"></i> Buy Package
                     </button>
                 </div>
@@ -92,7 +97,9 @@ async function fetchPackages() {
                 const packageId = btn.getAttribute("data-id");
                 const price = parseFloat(btn.getAttribute("data-price"));
                 const name = btn.getAttribute("data-name");
-                handlePurchaseRequest(packageId, price, name);
+                const commissionPercent = parseFloat(btn.getAttribute("data-commission")) || 0;
+                
+                handlePurchaseRequest(packageId, price, name, commissionPercent);
             });
         });
 
@@ -103,7 +110,7 @@ async function fetchPackages() {
 }
 
 // 3. Purchase Request Submission Flow
-async function handlePurchaseRequest(packageId, price, packageName) {
+async function handlePurchaseRequest(packageId, price, packageName, profitReferralCommissionPercentage) {
     const user = auth.currentUser;
     if (!user) return;
 
@@ -133,7 +140,10 @@ async function handlePurchaseRequest(packageId, price, packageName) {
             amount: price,
             status: "Pending", // Pending is verified in security rules updates
             packageName: packageName,
-            packageId: packageId
+            packageId: packageId,
+            // New logic: capture the template percentages at purchase time
+            profitReferralCommissionPercentage: Number(profitReferralCommissionPercentage || 0),
+            profitCommissionPaid: false // Defaults to unpaid
         };
 
         await setDoc(transRef, newTransaction);
@@ -204,7 +214,7 @@ async function fetchPurchaseHistory(uid) {
                     <strong class="text-white d-block">${tx.packageName || 'ROI Investment'}</strong>
                     <span class="text-muted small">Package ID: ${truncatedPackId}</span>
                 </td>
-                <td class="fw-bold text-info">$${parseFloat(tx.amount || 0).toFixed(2)}</td>
+                <td class="fw-bold text-highlight">$${parseFloat(tx.amount || 0).toFixed(2)}</td>
                 <td class="small text-muted">${tx.date || "---"}<br>${tx.time || ""}</td>
                 <td>${statusBadge}</td>
             `;
