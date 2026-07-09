@@ -1,11 +1,13 @@
 // js/withdraw.js
 import { auth, db } from "./firebase/config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { collection, doc, setDoc, getDoc, getDocs, query, where, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc, getDocs, query, where, limit, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 let userAvailableBalance = 0;
 const withdrawForm = document.getElementById("withdrawForm");
 const btnSubmitWithdraw = document.getElementById("btnSubmitWithdraw");
+const amountInput = document.getElementById("withdrawAmount");
+const lblReceiveAmount = document.getElementById("lblReceiveAmount");
 
 // Auth State Monitor
 onAuthStateChanged(auth, async (user) => {
@@ -15,15 +17,29 @@ onAuthStateChanged(auth, async (user) => {
     }
     
     try {
-        // Execute fetches concurrently
+        // Execute fetches concurrently (Includes loading saved wallet address)
         await Promise.all([
             loadWalletBalance(user.uid),
+            loadSavedWalletAddress(user.uid),
             loadWithdrawalHistory(user.uid)
         ]);
     } catch (e) {
         console.error("Failed to initialize withdrawal page dependencies:", e);
     }
 });
+
+// Real-time calculation for 5% transaction charge
+if (amountInput && lblReceiveAmount) {
+    amountInput.addEventListener("input", () => {
+        const amount = parseFloat(amountInput.value);
+        if (!isNaN(amount) && amount > 0) {
+            const finalAmount = amount * 0.95; // 5% charge deducted (Remaining 95%)
+            lblReceiveAmount.innerText = `$${finalAmount.toFixed(2)}`;
+        } else {
+            lblReceiveAmount.innerText = "$0.00";
+        }
+    });
+}
 
 // 1. Fetch Current Available Wallet Balance
 async function loadWalletBalance(uid) {
@@ -43,7 +59,28 @@ async function loadWalletBalance(uid) {
     }
 }
 
-// 2. Submit Withdrawal Request Form Handler
+// 2. Load Saved Wallet Address from User Profile
+async function loadSavedWalletAddress(uid) {
+    try {
+        const userDocRef = doc(db, "users", uid);
+        const docSnap = await getDoc(userDocRef);
+        
+        if (docSnap.exists()) {
+            const userData = docSnap.data();
+            // If user has previously saved address, populate it in input field
+            if (userData.walletAddress) {
+                const payoutInput = document.getElementById("payoutAddress");
+                if (payoutInput) {
+                    payoutInput.value = userData.walletAddress;
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Error loading saved wallet address:", error);
+    }
+}
+
+// 3. Submit Withdrawal Request Form Handler
 if (withdrawForm) {
     withdrawForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -51,7 +88,6 @@ if (withdrawForm) {
         const user = auth.currentUser;
         if (!user) return;
 
-        const amountInput = document.getElementById("withdrawAmount");
         const payoutInput = document.getElementById("payoutAddress");
 
         if (!amountInput || !payoutInput) return;
@@ -75,7 +111,8 @@ if (withdrawForm) {
             return;
         }
 
-        const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)} to address: \n\n${payoutAddress}?`);
+        const receiveAmountCalculated = amount * 0.95;
+        const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)}? \n\nYou will receive: $${receiveAmountCalculated.toFixed(2)} (after 5% charge) \n\nRecipient Address: ${payoutAddress}`);
         if (!confirmWithdraw) return;
 
         if (btnSubmitWithdraw) {
@@ -87,6 +124,7 @@ if (withdrawForm) {
             // Generate IDs
             const withdrawRef = doc(collection(db, "withdrawals"));
             const transRef = doc(collection(db, "transactions"));
+            const userDocRef = doc(db, "users", user.uid);
 
             const currentDate = new Date();
             const dateStr = currentDate.toLocaleDateString();
@@ -98,7 +136,7 @@ if (withdrawForm) {
                 uid: user.uid,
                 amount: amount,
                 walletAddress: payoutAddress,
-                status: "Pending", // Direct pending write allowed by security rules
+                status: "Pending",
                 date: dateStr,
                 time: timeStr,
                 timestamp: timestampStr
@@ -110,20 +148,30 @@ if (withdrawForm) {
                 date: dateStr,
                 time: timeStr,
                 timestamp: timestampStr,
-                type: "Withdrawal Request", // Allowed type within transaction security validation
+                type: "Withdrawal Request",
                 amount: amount,
                 status: "Pending"
             };
 
-            // Write database logs in parallel
+            // Write database logs & update user's saved wallet address in parallel
+            // Security rules allow owners to update 'walletAddress' in their own document
             await Promise.all([
                 setDoc(withdrawRef, newWithdrawal),
-                setDoc(transRef, newTransaction)
+                setDoc(transRef, newTransaction),
+                updateDoc(userDocRef, {
+                    walletAddress: payoutAddress
+                })
             ]);
 
             alert("Withdrawal request submitted successfully! Pending verification by admin.");
             
-            withdrawForm.reset();
+            // Clear only the amount field, but keep the wallet address filled for subsequent usage
+            if (amountInput) {
+                amountInput.value = "";
+            }
+            if (lblReceiveAmount) {
+                lblReceiveAmount.innerText = "$0.00"; 
+            }
             
             // Parallel update of balance and history views
             await Promise.all([
@@ -143,7 +191,7 @@ if (withdrawForm) {
     });
 }
 
-// 3. Load User Withdrawal Requests History (Capped / JS sorted)
+// 4. Load User Withdrawal Requests History (Capped / JS sorted)
 async function loadWithdrawalHistory(uid) {
     const tbody = document.getElementById("withdrawTableBody");
     if (!tbody) return;
