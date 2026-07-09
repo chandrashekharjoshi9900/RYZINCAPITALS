@@ -112,6 +112,8 @@ if (withdrawForm) {
         }
 
         const receiveAmountCalculated = amount * 0.945; // 5.5% deduction
+        const feesChargedCalculated = amount * 0.055;  // 5.5% fees
+        
         const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)}? \n\nYou will receive: $${receiveAmountCalculated.toFixed(2)} (after 5.5% charge) \n\nRecipient Address: ${payoutAddress}`);
         if (!confirmWithdraw) return;
 
@@ -131,10 +133,13 @@ if (withdrawForm) {
             const timeStr = currentDate.toLocaleTimeString();
             const timestampStr = currentDate.toISOString();
 
+            // Modified to send net amount ($9.45) directly into the 'amount' field
             const newWithdrawal = {
                 withdrawId: withdrawRef.id,
                 uid: user.uid,
-                amount: amount,
+                amount: parseFloat(receiveAmountCalculated.toFixed(2)), // Directly Net Payout ($9.45) - For Admin Panel
+                requestedAmount: amount, // Saved original gross amount ($10.00) for records
+                feesCharged: parseFloat(feesChargedCalculated.toFixed(2)), // Saved fees ($0.55)
                 walletAddress: payoutAddress,
                 status: "Pending",
                 date: dateStr,
@@ -149,12 +154,11 @@ if (withdrawForm) {
                 time: timeStr,
                 timestamp: timestampStr,
                 type: "Withdrawal Request",
-                amount: amount,
+                amount: amount, // Keep original requested amount in user history logs
                 status: "Pending"
             };
 
             // Write database logs & update user's saved wallet address in parallel
-            // Security rules allow owners to update 'walletAddress' in their own document
             await Promise.all([
                 setDoc(withdrawRef, newWithdrawal),
                 setDoc(transRef, newTransaction),
@@ -241,6 +245,9 @@ async function loadWithdrawalHistory(uid) {
             const dateStr = wd.date || "---";
             const timeStr = wd.time || "";
             const addressStr = wd.walletAddress || "N/A";
+            
+            // Displays the original requested amount ($10) or calculated payout ($9.45) based on your system design.
+            // Using the 'amount' field currently written ($9.45)
             const amountNum = parseFloat(wd.amount || 0).toFixed(2);
 
             const tr = document.createElement("tr");
