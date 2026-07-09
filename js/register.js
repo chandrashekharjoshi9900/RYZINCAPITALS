@@ -198,8 +198,23 @@ if (registerForm) {
             // Seed user profile directly into local storage to avoid read on next page load
             sessionStorage.setItem("user_profile", JSON.stringify(userData));
 
-            alert("Registration Successful!");
-            window.location.href = "dashboard.html";
+            // Trigger Custom Welcome Modal Instead of Alert
+            const welcomeModalEl = document.getElementById("welcomeModal");
+            if (welcomeModalEl) {
+                const welcomeModal = new bootstrap.Modal(welcomeModalEl);
+                welcomeModal.show();
+
+                const btnModalRedirect = document.getElementById("btnModalRedirect");
+                if (btnModalRedirect) {
+                    btnModalRedirect.addEventListener("click", () => {
+                        window.location.href = "dashboard.html";
+                    });
+                }
+            } else {
+                // Fallback inside error boundaries
+                alert("Registration Successful!");
+                window.location.href = "dashboard.html";
+            }
 
         } catch (error) {
             console.error("Registration phase failure:", error);
