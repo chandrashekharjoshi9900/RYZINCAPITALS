@@ -28,12 +28,12 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Real-time calculation for 5% transaction charge
+// Real-time calculation for 5.5% transaction charge
 if (amountInput && lblReceiveAmount) {
     amountInput.addEventListener("input", () => {
         const amount = parseFloat(amountInput.value);
         if (!isNaN(amount) && amount > 0) {
-            const finalAmount = amount * 0.95; // 5% charge deducted (Remaining 95%)
+            const finalAmount = amount * 0.945; // 5.5% charge deducted (Remaining 94.5%)
             lblReceiveAmount.innerText = `$${finalAmount.toFixed(2)}`;
         } else {
             lblReceiveAmount.innerText = "$0.00";
@@ -111,8 +111,8 @@ if (withdrawForm) {
             return;
         }
 
-        const receiveAmountCalculated = amount * 0.95;
-        const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)}? \n\nYou will receive: $${receiveAmountCalculated.toFixed(2)} (after 5% charge) \n\nRecipient Address: ${payoutAddress}`);
+        const receiveAmountCalculated = amount * 0.945; // 5.5% deduction
+        const confirmWithdraw = confirm(`Are you sure you want to withdraw $${amount.toFixed(2)}? \n\nYou will receive: $${receiveAmountCalculated.toFixed(2)} (after 5.5% charge) \n\nRecipient Address: ${payoutAddress}`);
         if (!confirmWithdraw) return;
 
         if (btnSubmitWithdraw) {
