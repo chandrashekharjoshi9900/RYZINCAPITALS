@@ -1,84 +1,2129 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rayzin Capitals - Loading...</title>
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Rayzin Capitals - India's Practical Trading Education Platform</title>
+    <!-- Favicon -->
+    <link rel="icon" href="logo.png" type="image/png">
     
+    <!-- Google Fonts for Premium Typography (Satoshi / Inter Alternative) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Interface Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* ==========================================================================
+           RESET & CSS VARIABLES (Strict Premium Dark Palette)
+           ========================================================================== */
+        :root {
+            --bg-pure: #000000;
+            --bg-deep: #111111;
+            --bg-card: #181818;
+            --text-pure: #ffffff;
+            --text-muted: #8e8e93;
+            --text-dim: #636366;
+            --green-primary: #00D26A;
+            --green-hover: #00B85C;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-green: rgba(0, 210, 106, 0.15);
+            --glow-green: rgba(0, 210, 106, 0.1);
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
         body {
-            background-color: #0a0b0d; /* Matching Rayzin capitals warm black */
-            color: #ffffff;
-            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-pure);
+            color: var(--text-pure);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Selection */
+        ::selection {
+            background-color: var(--green-primary);
+            color: var(--bg-pure);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-pure);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card);
+            border-radius: 4px;
+            border: 2px solid var(--bg-pure);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--green-primary);
+        }
+
+        /* ==========================================================================
+           GLOBAL REUSABLE COMPONENTS & UTILITIES
+           ========================================================================== */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-tagline {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--green-primary);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Buttons Styling (No underlines, rounded corners, glow shadow) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--green-primary);
+            color: var(--bg-pure);
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 210, 106, 0.15);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--green-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 210, 106, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-pure);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--green-primary);
+            background-color: rgba(255, 255, 255, 0.03);
+            transform: translateY(-2px);
+        }
+
+        /* ==========================================================================
+           HEADER / NAVBAR
+           ========================================================================== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            background-color: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+
+        .navbar.scrolled {
+            height: 70px;
+            background-color: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid rgba(0, 210, 106, 0.1);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+            transition: var(--transition-smooth);
+        }
+
+        .navbar.scrolled .logo-img {
+            height: 34px;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-link:hover {
+            color: var(--text-pure);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-toggle {
+            display: none;
+            color: var(--text-pure);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* ==========================================================================
+           SECTION 1: HERO SECTION
+           ========================================================================== */
+        .hero-section {
+            padding-top: 180px;
+            padding-bottom: 100px;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at 80% 20%, rgba(0, 210, 106, 0.05) 0%, transparent 50%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .hero-content {
+            z-index: 10;
+        }
+
+        .hero-badge {
+            background-color: rgba(0, 210, 106, 0.08);
+            border: 1px solid var(--border-green);
+            color: var(--green-primary);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .hero-badge i {
+            font-size: 10px;
+            animation: pulse-glowing 2s infinite;
+        }
+
+        .hero-heading {
+            font-size: 56px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            color: var(--text-pure);
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--green-primary);
+            margin-bottom: 20px;
+        }
+
+        .hero-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            max-width: 520px;
+        }
+
+        .hero-tagline {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* Right Side: Animated Premium Dashboard Illustration */
+        .hero-visual {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
         }
-        .loader-container {
+
+        .dashboard-container {
+            width: 100%;
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .dashboard-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-dim);
+        }
+
+        .dot-green {
+            background-color: var(--green-primary);
+        }
+
+        .dashboard-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Beautiful Live Candlestick Simulation */
+        .chart-wrapper {
+            height: 180px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding-top: 20px;
+            gap: 4px;
+        }
+
+        .chart-candle {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            height: 100%;
+            position: relative;
+        }
+
+        .candle-wick {
+            width: 2px;
+            background-color: var(--text-dim);
+            position: absolute;
+            bottom: 0;
+        }
+
+        .candle-body {
+            width: 100%;
+            border-radius: 2px;
+            z-index: 2;
+        }
+
+        /* Styling individual dynamic looking candles */
+        .candle-up .candle-body {
+            background-color: var(--green-primary);
+            box-shadow: 0 0 10px rgba(0, 210, 106, 0.2);
+        }
+        .candle-up .candle-wick {
+            background-color: var(--green-primary);
+        }
+
+        .candle-down .candle-body {
+            background-color: #333333;
+        }
+        .candle-down .candle-wick {
+            background-color: #333333;
+        }
+
+        /* Floating Cards */
+        .floating-card {
+            position: absolute;
+            background: rgba(24, 24, 24, 0.95);
+            border: 1px solid var(--border-green);
+            padding: 12px 18px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 210, 106, 0.1);
+            animation: floating 6s ease-in-out infinite;
+            z-index: 20;
+        }
+
+        .floating-card-1 {
+            top: -20px;
+            right: -10px;
+            animation-delay: 0s;
+        }
+
+        .floating-card-2 {
+            bottom: -15px;
+            left: -10px;
+            animation-delay: 3s;
+        }
+
+        .card-stat-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .card-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-pure);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card-stat-value.up {
+            color: var(--green-primary);
+        }
+
+        .live-class-indicator {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--border-green);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--green-primary);
+            z-index: 10;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--green-primary);
+            border-radius: 50%;
+            animation: pulse-glowing 1.5s infinite;
+        }
+
+        /* ==========================================================================
+           SECTION 2: WHY RAYZIN CAPITALS
+           ========================================================================== */
+        .why-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .why-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 64px;
+            align-items: center;
+        }
+
+        .why-statement {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--green-primary);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .why-paragraph {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        /* ==========================================================================
+           SECTION 3: WHAT YOU'LL LEARN
+           ========================================================================== */
+        .learn-section {
+            padding: 100px 0;
+        }
+
+        .learn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .learn-card {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 32px 24px;
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .learn-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0, 210, 106, 0.03) 0%, transparent 100%);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .learn-card:hover {
+            border-color: var(--green-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 210, 106, 0.05);
+        }
+
+        .learn-card:hover::before {
+            opacity: 1;
+        }
+
+        .learn-icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--green-primary);
+            margin-bottom: 24px;
+            transition: var(--transition-smooth);
+        }
+
+        .learn-card:hover .learn-icon-box {
+            background-color: rgba(0, 210, 106, 0.1);
+            border-color: var(--green-primary);
+        }
+
+        .learn-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .learn-list {
+            list-style: none;
+        }
+
+        .learn-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .learn-item i {
+            font-size: 12px;
+            color: var(--green-primary);
+        }
+
+        /* ==========================================================================
+           SECTION 4: OUR PROGRAMS
+           ========================================================================== */
+        .programs-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .programs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .program-card {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 40px 32px;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .program-card:hover {
+            border-color: var(--green-primary);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            transform: translateY(-4px);
+        }
+
+        .program-header {
+            margin-bottom: 24px;
+        }
+
+        .program-badge {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .program-card:hover .program-badge {
+            background-color: rgba(0, 210, 106, 0.1);
+            border-color: var(--green-primary);
+            color: var(--green-primary);
+        }
+
+        .program-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .program-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .program-features {
+            list-style: none;
+            margin-bottom: 32px;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 24px;
+        }
+
+        .program-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            color: var(--text-pure);
+            margin-bottom: 16px;
+        }
+
+        .program-feature-item i {
+            color: var(--green-primary);
+            font-size: 14px;
+        }
+
+        /* ==========================================================================
+           SECTION 5: WHY CHOOSE RAYZIN CAPITALS
+           ========================================================================== */
+        .choose-section {
+            padding: 100px 0;
+        }
+
+        .choose-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .choose-card {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: left;
+            transition: var(--transition-smooth);
+        }
+
+        .choose-card:hover {
+            border-color: var(--green-primary);
+            transform: translateY(-2px);
+        }
+
+        .choose-icon {
+            font-size: 24px;
+            color: var(--green-primary);
+            margin-bottom: 16px;
+        }
+
+        .choose-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-pure);
+        }
+
+        /* ==========================================================================
+           SECTION 6: LEARNING PROCESS
+           ========================================================================== */
+        .process-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .process-flow {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        .process-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            padding: 32px 20px;
+            border-radius: 12px;
+            transition: var(--transition-smooth);
+            z-index: 2;
+        }
+
+        .process-step:hover {
+            border-color: var(--green-primary);
+            transform: translateY(-4px);
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background-color: rgba(0, 210, 106, 0.1);
+            border: 1px solid var(--border-green);
+            color: var(--green-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 auto 16px auto;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-pure);
+        }
+
+        .process-arrow {
+            color: var(--text-dim);
+            font-size: 18px;
+            animation: pulse-arrow 2s infinite;
+        }
+
+        /* ==========================================================================
+           SECTION 7: WHO CAN JOIN
+           ========================================================================== */
+        .join-section {
+            padding: 100px 0;
+        }
+
+        .join-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .join-card {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            padding: 24px 16px;
+            border-radius: 12px;
+            text-align: center;
+            transition: var(--transition-smooth);
+        }
+
+        .join-card:hover {
+            border-color: var(--green-primary);
+            transform: translateY(-2px);
+        }
+
+        .join-icon-wrapper {
+            font-size: 24px;
+            color: var(--green-primary);
+            margin-bottom: 12px;
+        }
+
+        .join-label {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .join-footer-tagline {
+            text-align: center;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background-color: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            padding: 12px 24px;
+            border-radius: 50px;
+            display: table;
+            margin: 0 auto;
+        }
+
+        /* ==========================================================================
+           SECTION 8: STUDENT BENEFITS
+           ========================================================================== */
+        .benefits-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .benefit-card {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            padding: 28px;
+            border-radius: 12px;
+            transition: var(--transition-smooth);
+        }
+
+        .benefit-card:hover {
+            border-color: var(--green-primary);
+        }
+
+        .benefit-icon {
+            font-size: 20px;
+            color: var(--green-primary);
+            margin-bottom: 16px;
+        }
+
+        .benefit-title {
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        /* ==========================================================================
+           SECTION 9 & 10: VISION & MISSION
+           ========================================================================== */
+        .vm-section {
+            padding: 100px 0;
+        }
+
+        .vm-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .vm-card {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--green-primary);
+        }
+
+        .vm-icon-box {
+            font-size: 32px;
+            color: var(--green-primary);
+            margin-bottom: 24px;
+        }
+
+        .vm-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .vm-text {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* ==========================================================================
+           SECTION 11: STUDENT REVIEWS
+           ========================================================================== */
+        .reviews-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .reviews-slider-wrapper {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .reviews-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .review-slide {
+            min-width: 100%;
+            padding: 0 10px;
+        }
+
+        .review-card {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 40px;
             text-align: center;
         }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.05);
-            width: 50px;
-            height: 50px;
+
+        .review-stars {
+            color: var(--green-primary);
+            margin-bottom: 16px;
+        }
+
+        .review-text {
+            font-size: 18px;
+            font-style: italic;
+            color: var(--text-pure);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .review-author {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-pure);
+        }
+
+        .review-role {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .slider-arrow {
+            background-color: var(--bg-pure);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-pure);
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            border-left-color: #00c25a; /* Matching emerald green */
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .slider-arrow:hover {
+            border-color: var(--green-primary);
+            color: var(--green-primary);
         }
-        .text {
-            color: #9fb1c0;
+
+        /* ==========================================================================
+           SECTION 12: LIVE TRADING CLASSES
+           ========================================================================== */
+        .live-classes-section {
+            padding: 100px 0;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(0, 210, 106, 0.03) 0%, transparent 70%);
+        }
+
+        .live-wrapper {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-green);
+            padding: 64px;
+            border-radius: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .live-badge-glow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(0, 210, 106, 0.08);
+            border: 1px solid var(--border-green);
+            color: var(--green-primary);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 24px;
+        }
+
+        .live-classes-section h2 {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .live-classes-section p {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+        }
+
+        /* ==========================================================================
+           SECTION 13: FAQ ACCORDION
+           ========================================================================== */
+        .faq-section {
+            padding: 100px 0;
+            background-color: var(--bg-deep);
+            border-top: 1px solid var(--border-subtle);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .faq-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border: 1px solid var(--border-subtle);
+            background-color: var(--bg-pure);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .faq-header {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .faq-question {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .faq-icon {
             font-size: 14px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            transition: var(--transition-smooth);
+        }
+
+        .faq-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-content {
+            padding: 0 24px 24px 24px;
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .faq-item.active {
+            border-color: var(--green-primary);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+            color: var(--green-primary);
+        }
+
+        /* ==========================================================================
+           SECTION 14: CALL TO ACTION
+           ========================================================================== */
+        .cta-section {
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+        }
+
+        .cta-box {
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-green);
+            padding: 80px 40px;
+            border-radius: 24px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 0 20px 50px rgba(0, 210, 106, 0.05);
+        }
+
+        .cta-title {
+            font-size: 40px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .cta-desc {
+            font-size: 16px;
+            color: var(--text-muted);
+            max-width: 580px;
+            margin: 0 auto 32px auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================================================
+           SECTION 15: FOOTER
+           ========================================================================== */
+        .footer {
+            background-color: var(--bg-pure);
+            border-top: 1px solid var(--border-subtle);
+            padding: 80px 0 40px 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr repeat(3, 1fr);
+            gap: 48px;
+            margin-bottom: 64px;
+        }
+
+        .footer-logo-wrapper {
+            margin-bottom: 20px;
+        }
+
+        .footer-logo {
+            height: 48px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .footer-brand-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin-bottom: 24px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            background-color: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .social-link:hover {
+            border-color: var(--green-primary);
+            color: var(--green-primary);
+            transform: translateY(-2px);
+        }
+
+        .footer-column-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-link-item {
+            margin-bottom: 12px;
+        }
+
+        .footer-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-link:hover {
+            color: var(--green-primary);
+        }
+
+        .footer-disclaimer-box {
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .disclaimer-heading {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-pure);
+            margin-bottom: 12px;
+        }
+
+        .disclaimer-text {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .footer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 24px;
+        }
+
+        /* ==========================================================================
+           ANIMATIONS (60 FPS Performance Optimized)
+           ========================================================================== */
+        @keyframes pulse-glowing {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulse-arrow {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(4px); }
+        }
+
+        /* Intersection Observer Reveal on Scroll classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ==========================================================================
+           RESPONSIVE DESIGN (Pixel Perfect Layout Adjustments)
+           ========================================================================== */
+        @media (max-width: 1024px) {
+            .hero-heading { font-size: 46px; }
+            .learn-grid { grid-template-columns: repeat(2, 1fr); }
+            .programs-grid { grid-template-columns: repeat(2, 1fr); }
+            .choose-grid { grid-template-columns: repeat(2, 1fr); }
+            .join-grid { grid-template-columns: repeat(3, 1fr); }
+            .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+            .vm-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .nav-toggle { display: block; }
+            .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+            .hero-content { text-align: center; }
+            .hero-desc { margin-left: auto; margin-right: auto; }
+            .hero-buttons { justify-content: center; }
+            .why-grid { grid-template-columns: 1fr; gap: 32px; }
+            .process-flow { flex-direction: column; gap: 24px; }
+            .process-arrow { transform: rotate(90deg); animation: none; }
+            .join-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-heading { font-size: 36px; }
+            .learn-grid { grid-template-columns: 1fr; }
+            .programs-grid { grid-template-columns: 1fr; }
+            .choose-grid { grid-template-columns: 1fr; }
+            .join-grid { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="loader-container">
-        <div class="spinner"></div>
-        <div class="text">Verifying secure session...</div>
-    </div>
+    <!-- ==========================================================================
+       NAVIGATION BAR
+       ========================================================================== -->
+    <nav class="navbar" id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo-container">
+                <img src="logo.png" alt="Rayzin Capitals" class="logo-img">
+            </a>
+            
+            <ul class="nav-menu">
+                <li><a href="#why-rayzin" class="nav-link">Why Rayzin</a></li>
+                <li><a href="#learn" class="nav-link">What You'll Learn</a></li>
+                <li><a href="#programs" class="nav-link">Our Programs</a></li>
+                <li><a href="#process" class="nav-link">Process</a></li>
+                <li><a href="#faq" class="nav-link">FAQ</a></li>
+            </ul>
 
-    <!-- Firebase Smart Routing Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+            <div class="nav-actions">
+                <!-- Keep Firebase Register/Login triggers completely untouched -->
+                <a href="login.html" class="btn btn-secondary" style="padding: 10px 20px; font-size: 13px;">Login</a>
+                <a href="register.html" class="btn btn-primary" style="padding: 10px 20px; font-size: 13px;">Enroll Now</a>
+                <div class="nav-toggle" id="nav-toggle">
+                    <i class="fa-solid fa-bars"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-        // Same Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyAjS4UVPc8plWyKGzzuFwSnliT5Me75wVE",
-            authDomain: "testcrypto-bd7a4.firebaseapp.com",
-            projectId: "testcrypto-bd7a4",
-            storageBucket: "testcrypto-bd7a4.firebasestorage.app",
-            messagingSenderId: "588861293611",
-            appId: "1:588861293611:web:8a1c31fe634720b180966e"
-        };
+    <!-- ==========================================================================
+       SECTION 1: HERO SECTION
+       ========================================================================== -->
+    <header class="hero-section">
+        <div class="container hero-grid">
+            <div class="hero-content reveal">
+                <div class="hero-badge">
+                    <i class="fa-solid fa-circle"></i> Practical & Live Education
+                </div>
+                <h1 class="hero-heading">Learn. Trade. Grow with Confidence.</h1>
+                <div class="hero-subtitle">India's Practical Trading Education Platform</div>
+                <p class="hero-desc">
+                    Master Stock Market, Forex & Crypto Trading through live mentorship, practical learning, and risk management strategies.
+                </p>
+                <span class="hero-tagline">Learn Today. Trade Smarter Tomorrow.</span>
+                <div class="hero-buttons">
+                    <a href="register.html" class="btn btn-primary">Enroll Now</a>
+                    <a href="#cta" class="btn btn-secondary">Book Free Demo</a>
+                </div>
+            </div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+            <!-- Visual Dashboard Asset (Pure code animation, no external assets needed) -->
+            <div class="hero-visual reveal" style="transition-delay: 0.2s;">
+                <div class="dashboard-container">
+                    <div class="live-class-indicator">
+                        <span class="pulse-dot"></span> LIVE CLASS UNDERWAY
+                    </div>
+                    <div class="dashboard-header">
+                        <div class="dashboard-dots">
+                            <span class="dot dot-green"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <div class="dashboard-title">Rayzin Capitals Terminal v1.0</div>
+                    </div>
+                    
+                    <div class="chart-wrapper">
+                        <!-- Simulated Real-time Chart Candles -->
+                        <div class="chart-candle candle-up" style="height: 50%;">
+                            <div class="candle-wick" style="height: 110%;"></div>
+                            <div class="candle-body" style="height: 70%;"></div>
+                        </div>
+                        <div class="chart-candle candle-down" style="height: 40%;">
+                            <div class="candle-wick" style="height: 120%;"></div>
+                            <div class="candle-body" style="height: 50%;"></div>
+                        </div>
+                        <div class="chart-candle candle-up" style="height: 75%;">
+                            <div class="candle-wick" style="height: 105%;"></div>
+                            <div class="candle-body" style="height: 80%;"></div>
+                        </div>
+                        <div class="chart-candle candle-up" style="height: 85%;">
+                            <div class="candle-wick" style="height: 115%;"></div>
+                            <div class="candle-body" style="height: 60%;"></div>
+                        </div>
+                        <div class="chart-candle candle-down" style="height: 60%;">
+                            <div class="candle-wick" style="height: 130%;"></div>
+                            <div class="candle-body" style="height: 75%;"></div>
+                        </div>
+                        <div class="chart-candle candle-up" style="height: 95%;">
+                            <div class="candle-wick" style="height: 105%;"></div>
+                            <div class="candle-body" style="height: 90%;"></div>
+                        </div>
+                    </div>
+                </div>
 
-        // Smart Redirector Logic
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // User is authenticated, go to dashboard
-                window.location.href = "dashboard.html";
+                <!-- Floating Premium Badges -->
+                <div class="floating-card floating-card-1">
+                    <div class="card-stat-label">Nifty Index</div>
+                    <div class="card-stat-value up">+1.45% <i class="fa-solid fa-arrow-trend-up"></i></div>
+                </div>
+                <div class="floating-card floating-card-2">
+                    <div class="card-stat-label">Total Volume Traded</div>
+                    <div class="card-stat-value" style="color: #ffffff;">84.5M</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==========================================================================
+       SECTION 2: WHY RAYZIN CAPITALS
+       ========================================================================== */ -->
+    <section class="why-section" id="why-rayzin">
+        <div class="container why-grid">
+            <div class="reveal">
+                <span class="section-tagline">Core Philosophy</span>
+                <h2 class="section-title" style="text-align: left;">We Believe Knowledge Creates Opportunity</h2>
+            </div>
+            <div class="reveal" style="transition-delay: 0.1s;">
+                <p class="why-statement">
+                    At Rayzin Capitals, our mission is to help individuals understand financial markets through structured education, live practical sessions, and disciplined trading techniques.
+                </p>
+                <p class="why-paragraph">
+                    We focus on developing confident traders by teaching market analysis, psychology, and risk management—not shortcuts.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 3: WHAT YOU'LL LEARN
+       ========================================================================== -->
+    <section class="learn-section" id="learn">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Curriculum Overview</span>
+                <h2 class="section-title">What You'll Learn</h2>
+                <p class="section-subtitle">Deep dive into complete and structured market modules with comprehensive practical tasks.</p>
+            </div>
+
+            <div class="learn-grid">
+                <!-- Card 1: Stock Market -->
+                <div class="learn-card reveal">
+                    <div class="learn-icon-box"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3 class="learn-card-title">Stock Market</h3>
+                    <ul class="learn-list">
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Price Action</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Swing Trading</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Intraday Trading</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Option Basics</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2: Forex Market -->
+                <div class="learn-card reveal" style="transition-delay: 0.1s;">
+                    <div class="learn-icon-box"><i class="fa-solid fa-globe"></i></div>
+                    <h3 class="learn-card-title">Forex Market</h3>
+                    <ul class="learn-list">
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Currency Trading</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Trend Analysis</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Entry & Exit Strategies</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3: Crypto Market -->
+                <div class="learn-card reveal" style="transition-delay: 0.2s;">
+                    <div class="learn-icon-box"><i class="fa-brands fa-bitcoin"></i></div>
+                    <h3 class="learn-card-title">Crypto Market</h3>
+                    <ul class="learn-list">
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Market Structure</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Risk Management</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Spot Trading Concepts</li>
+                    </ul>
+                </div>
+
+                <!-- Card 4: Trading Psychology -->
+                <div class="learn-card reveal" style="transition-delay: 0.3s;">
+                    <div class="learn-icon-box"><i class="fa-solid fa-brain"></i></div>
+                    <h3 class="learn-card-title">Trading Psychology</h3>
+                    <ul class="learn-list">
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Emotional Control</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Discipline</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Trading Journal</li>
+                        <li class="learn-item"><i class="fa-solid fa-check"></i> Money Management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 4: OUR PROGRAMS
+       ========================================================================== -->
+    <section class="programs-section" id="programs">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Academic Paths</span>
+                <h2 class="section-title">Our Programs</h2>
+                <p class="section-subtitle">Tailored learning structures crafted to transition students from foundation to real market independence.</p>
+            </div>
+
+            <div class="programs-grid">
+                <!-- Program 1 -->
+                <div class="program-card reveal">
+                    <div class="program-header">
+                        <span class="program-badge">Foundation</span>
+                        <h3 class="program-title">Beginner Course</h3>
+                        <p class="program-desc">Start your trading journey with a clean, systematic introduction to standard financial theories.</p>
+                    </div>
+                    <ul class="program-features">
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Introduction to Markets</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Foundational Charting</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Standard Terminology</li>
+                    </ul>
+                </div>
+
+                <!-- Program 2 -->
+                <div class="program-card reveal" style="transition-delay: 0.1s;">
+                    <div class="program-header">
+                        <span class="program-badge">Pro Level</span>
+                        <h3 class="program-title">Advanced Trading Program</h3>
+                        <p class="program-desc">Equip yourself with the tools required to formulate high-probability execution setups.</p>
+                    </div>
+                    <ul class="program-features">
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Deep Price Action & Volatility</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Risk Management Formulas</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Structured Plan Development</li>
+                    </ul>
+                </div>
+
+                <!-- Program 3 -->
+                <div class="program-card reveal" style="transition-delay: 0.2s;">
+                    <div class="program-header">
+                        <span class="program-badge">Elite Track</span>
+                        <h3 class="program-title">Live Market Mentorship</h3>
+                        <p class="program-desc">Work hand-in-hand with skilled educators during active live-market environments.</p>
+                    </div>
+                    <ul class="program-features">
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Interactive Session Execution</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Real-time Query Resolution</li>
+                        <li class="program-feature-item"><i class="fa-solid fa-circle-check"></i> Strategy Backtesting Lab</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 5: WHY CHOOSE RAYZIN CAPITALS
+       ========================================================================== -->
+    <section class="choose-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Why Choose Us</span>
+                <h2 class="section-title">The Rayzin Advantage</h2>
+                <p class="section-subtitle">Engineered specifically to help students avoid traditional trading education pitfalls.</p>
+            </div>
+
+            <div class="choose-grid">
+                <div class="choose-card reveal">
+                    <i class="fa-solid fa-video choose-icon"></i>
+                    <h4 class="choose-title">Live Interactive Classes</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.05s;">
+                    <i class="fa-solid fa-chart-line choose-icon"></i>
+                    <h4 class="choose-title">Practical Market Learning</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.1s;">
+                    <i class="fa-solid fa-users-viewfinder choose-icon"></i>
+                    <h4 class="choose-title">Experienced Mentorship</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.15s;">
+                    <i class="fa-solid fa-scroll choose-icon"></i>
+                    <h4 class="choose-title">Structured Trading Curriculum</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.2s;">
+                    <i class="fa-solid fa-comments choose-icon"></i>
+                    <h4 class="choose-title">Lifetime Community Support</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.25s;">
+                    <i class="fa-solid fa-circle-question choose-icon"></i>
+                    <h4 class="choose-title">Doubt Solving Sessions</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.3s;">
+                    <i class="fa-solid fa-magnifying-glass-chart choose-icon"></i>
+                    <h4 class="choose-title">Regular Market Analysis</h4>
+                </div>
+                <div class="choose-card reveal" style="transition-delay: 0.35s;">
+                    <i class="fa-solid fa-school-flag choose-icon"></i>
+                    <h4 class="choose-title">Professional Learning Environment</h4>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 6: LEARNING PROCESS
+       ========================================================================== -->
+    <section class="process-section" id="process">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Your Roadmap</span>
+                <h2 class="section-title">Learning Process</h2>
+                <p class="section-subtitle">Our structural process guarantees consistency from onboarding to live-market activity.</p>
+            </div>
+
+            <div class="process-flow reveal">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">Register</div>
+                </div>
+                <div class="process-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">Attend Live Classes</div>
+                </div>
+                <div class="process-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">Practice with Guidance</div>
+                </div>
+                <div class="process-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">Develop Trading Skills</div>
+                </div>
+                <div class="process-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">Become a Disciplined Trader</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 7: WHO CAN JOIN
+       ========================================================================== -->
+    <section class="join-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Eligibility</span>
+                <h2 class="section-title">Who Can Join</h2>
+                <p class="section-subtitle">Our material has been structured to build your understanding step-by-step from zero.</p>
+            </div>
+
+            <div class="join-grid">
+                <div class="join-card reveal">
+                    <div class="join-icon-wrapper"><i class="fa-solid fa-user-graduate"></i></div>
+                    <div class="join-label">Students</div>
+                </div>
+                <div class="join-card reveal" style="transition-delay: 0.1s;">
+                    <div class="join-icon-wrapper"><i class="fa-solid fa-briefcase"></i></div>
+                    <div class="join-label">Working Professionals</div>
+                </div>
+                <div class="join-card reveal" style="transition-delay: 0.2s;">
+                    <div class="join-icon-wrapper"><i class="fa-solid fa-store"></i></div>
+                    <div class="join-label">Business Owners</div>
+                </div>
+                <div class="join-card reveal" style="transition-delay: 0.3s;">
+                    <div class="join-icon-wrapper"><i class="fa-solid fa-hourglass-start"></i></div>
+                    <div class="join-label">Beginners</div>
+                </div>
+                <div class="join-card reveal" style="transition-delay: 0.4s;">
+                    <div class="join-icon-wrapper"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="join-label">Aspiring Traders</div>
+                </div>
+            </div>
+
+            <div class="join-footer-tagline reveal">
+                <i class="fa-solid fa-circle-info" style="color: var(--green-primary); margin-right: 8px;"></i> No prior trading experience required.
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 8: STUDENT BENEFITS
+       ========================================================================== -->
+    <section class="benefits-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Ecosystem</span>
+                <h2 class="section-title">Student Benefits</h2>
+                <p class="section-subtitle">Unlock practical ongoing ecosystem support along with access to class resources.</p>
+            </div>
+
+            <div class="benefits-grid">
+                <div class="benefit-card reveal">
+                    <i class="fa-solid fa-chalkboard-user benefit-icon"></i>
+                    <h5 class="benefit-title">Live Mentorship</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.05s;">
+                    <i class="fa-solid fa-clapperboard benefit-icon"></i>
+                    <h5 class="benefit-title">Recorded Sessions</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.1s;">
+                    <i class="fa-solid fa-book-bookmark benefit-icon"></i>
+                    <h5 class="benefit-title">Trading Notes</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.15s;">
+                    <i class="fa-solid fa-users benefit-icon"></i>
+                    <h5 class="benefit-title">Community Support</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.2s;">
+                    <i class="fa-solid fa-clipboard-question benefit-icon"></i>
+                    <h5 class="benefit-title">Weekly Q&A</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.25s;">
+                    <i class="fa-solid fa-bolt benefit-icon"></i>
+                    <h5 class="benefit-title">Market Updates</h5>
+                </div>
+                <div class="benefit-card reveal" style="transition-delay: 0.3s;" style="grid-column: span 2;">
+                    <i class="fa-solid fa-award benefit-icon"></i>
+                    <h5 class="benefit-title">Certificate of Completion <span style="font-weight: 400; color: var(--text-dim);">(Optional)</span></h5>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 9 & 10: VISION & MISSION
+       ========================================================================== -->
+    <section class="vm-section">
+        <div class="container vm-grid">
+            <div class="vm-card reveal">
+                <div class="vm-icon-box"><i class="fa-solid fa-eye"></i></div>
+                <h3 class="vm-title">Our Vision</h3>
+                <p class="vm-text">
+                    To build one of India's most trusted financial education communities by promoting disciplined learning, ethical trading practices, and continuous personal growth.
+                </p>
+            </div>
+
+            <div class="vm-card reveal" style="transition-delay: 0.1s;">
+                <div class="vm-icon-box"><i class="fa-solid fa-bullseye"></i></div>
+                <h3 class="vm-title">Our Mission</h3>
+                <p class="vm-text">
+                    Empower individuals with practical market education that helps them understand financial markets and make informed trading decisions independently.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 11: STUDENT REVIEWS (Premium Custom Interactive Slider)
+       ========================================================================== -->
+    <section class="reviews-section">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Testimonials</span>
+                <h2 class="section-title">Student Reviews</h2>
+                <p class="section-subtitle">Hear directly from individuals who structured their framework through our system.</p>
+            </div>
+
+            <div class="reviews-slider-wrapper reveal">
+                <div class="reviews-track" id="reviews-track">
+                    <!-- Slide 1 -->
+                    <div class="review-slide">
+                        <div class="review-card">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">
+                                "The systematic risk management frameworks taught here completely restructured how I view volatility. The live feedback is invaluable."
+                            </p>
+                            <h4 class="review-author">Aravind Sharma</h4>
+                            <p class="review-role">Active Retail Trader</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="review-slide">
+                        <div class="review-card">
+                            <div class="review-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                            <p class="review-text">
+                                "The approach is entirely practical. No hype, no overnight millionaire formulas—just clear chart logic and structured discipline."
+                            </p>
+                            <h4 class="review-author">Kunal Patel</h4>
+                            <p class="review-role">Working Professional</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slider-controls">
+                    <button class="slider-arrow" id="slide-prev"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button class="slider-arrow" id="slide-next"><i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 12: LIVE TRADING CLASSES
+       ========================================================================== -->
+    <section class="live-classes-section">
+        <div class="container">
+            <div class="live-wrapper reveal">
+                <div class="live-badge-glow">
+                    <span class="pulse-dot"></span> Interactive Cohort
+                </div>
+                <h2>Learn Live. Practice Smart. Grow with Confidence.</h2>
+                <p>Acquire deep capabilities in high-performance strategy analysis through interactive feedback sessions with expert educators.</p>
+                <a href="register.html" class="btn btn-primary">Join Live Classes</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 13: FAQ (Premium Vanilla JS Accordion)
+       ========================================================================== -->
+    <section class="faq-section" id="faq">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-tagline">Support Desk</span>
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <p class="section-subtitle">Have queries about how our program structure handles your journey? Here are answers.</p>
+            </div>
+
+            <div class="faq-wrapper">
+                <div class="faq-item reveal">
+                    <div class="faq-header">
+                        <h4 class="faq-question">What is the overall format of the programs?</h4>
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-body">
+                        <div class="faq-content">
+                            Our primary curriculum is delivered via interactive live interactive classes where participants can query educators dynamically. All materials are archived for personal dashboard review.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item reveal" style="transition-delay: 0.1s;">
+                    <div class="faq-header">
+                        <h4 class="faq-question">Is prior financial background required?</h4>
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-body">
+                        <div class="faq-content">
+                            No. We have engineered our fundamental curriculum modules step-by-step from standard definitions upwards. Prior theoretical exposure is completely unneeded.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item reveal" style="transition-delay: 0.2s;">
+                    <div class="faq-header">
+                        <h4 class="faq-question">How does structural lifetime support work?</h4>
+                        <i class="fa-solid fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-body">
+                        <div class="faq-content">
+                            Upon enrolling, participants receive access credentials to our localized student channels, where they can share trade setups, discuss general market developments, and join active Q&A forums.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 14: CALL TO ACTION
+       ========================================================================== -->
+    <section class="cta-section" id="cta">
+        <div class="container">
+            <div class="cta-box reveal">
+                <h2 class="cta-title">Ready to Start Your Trading Journey?</h2>
+                <p class="cta-desc">
+                    Join Rayzin Capitals and begin learning with a structured, practical approach to financial markets.
+                </p>
+                <div class="cta-buttons">
+                    <a href="register.html" class="btn btn-primary">Enroll Today</a>
+                    <!-- Book Free Demo can open registration or dynamic dashboard hook seamlessly -->
+                    <a href="register.html" class="btn btn-secondary">Book Free Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       SECTION 15: FOOTER
+       ========================================================================== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-logo-wrapper">
+                        <img src="logo.png" alt="Rayzin Capitals" class="footer-logo">
+                    </div>
+                    <p class="footer-brand-desc">
+                        Providing premier modern financial education utilizing live practice sessions and disciplined structural systems.
+                    </p>
+                    <div class="footer-socials">
+                        <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h5 class="footer-column-title">Curriculum</h5>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="#learn" class="footer-link">Stock Market</a></li>
+                        <li class="footer-link-item"><a href="#learn" class="footer-link">Forex Market</a></li>
+                        <li class="footer-link-item"><a href="#learn" class="footer-link">Crypto Concepts</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="footer-column-title">Programs</h5>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="#programs" class="footer-link">Beginner Course</a></li>
+                        <li class="footer-link-item"><a href="#programs" class="footer-link">Advanced Trading</a></li>
+                        <li class="footer-link-item"><a href="#programs" class="footer-link">Live Mentorship</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h5 class="footer-column-title">Account</h5>
+                    <ul class="footer-links">
+                        <li class="footer-link-item"><a href="login.html" class="footer-link">Member Sign In</a></li>
+                        <li class="footer-link-item"><a href="register.html" class="footer-link">Register New Account</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Disclaimer Box (Required Exact Legal/Edu Copy) -->
+            <div class="footer-disclaimer-box">
+                <h6 class="disclaimer-heading">Disclaimer</h6>
+                <p class="disclaimer-text">
+                    All information provided on this platform is solely for educational and informational purposes. Trading in financial instruments involving equities, foreign currencies, and digital cryptocurrencies carries inherent risks. Participants are advised to implement thorough technical assessments and evaluate risk profiles independently. Rayzin Capitals is not a registered investment advisor and does not guarantee financial performance.
+                </p>
+            </div>
+
+            <div class="footer-bottom">
+                <div>&copy; 2025 Rayzin Capitals. All Rights Reserved.</div>
+                <div>Designed for Structured Financial Growth</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+       OPTIMIZED JAVASCRIPT & ANCHOR INTEGRATION
+       ========================================================================== -->
+    <script>
+        // Smooth Sticky Navbar Transitions
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('scrolled');
             } else {
-                // No session, redirect to login page
-                window.location.href = "login.html";
+                navbar.classList.remove('scrolled');
             }
         });
+
+        // Mobile Nav Toggle Mechanics
+        const navToggle = document.getElementById('nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+        if (navToggle) {
+            navToggle.addEventListener('click', () => {
+                if (navMenu.style.display === 'flex') {
+                    navMenu.style.display = 'none';
+                } else {
+                    navMenu.style.display = 'flex';
+                    navMenu.style.flexDirection = 'column';
+                    navMenu.style.position = 'absolute';
+                    navMenu.style.top = '70px';
+                    navMenu.style.left = '0';
+                    navMenu.style.width = '100%';
+                    navMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.95)';
+                    navMenu.style.padding = '24px';
+                    navMenu.style.borderBottom = '1px solid var(--border-green)';
+                }
+            });
+        }
+
+        // 60 FPS Intersection Observer Reveal Animation
+        const revealElements = document.querySelectorAll('.reveal');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        revealElements.forEach(element => {
+            revealObserver.observe(element);
+        });
+
+        // Premium FAQ Accordion Mechanics
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const header = item.querySelector('.faq-header');
+            header.addEventListener('click', () => {
+                const isOpen = item.classList.contains('active');
+                
+                // Close other open panels smoothly
+                faqItems.forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-body').style.maxHeight = null;
+                });
+
+                if (!isOpen) {
+                    item.classList.add('active');
+                    const body = item.querySelector('.faq-body');
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Premium Review Slider Track Navigation
+        const track = document.getElementById('reviews-track');
+        const prevBtn = document.getElementById('slide-prev');
+        const nextBtn = document.getElementById('slide-next');
+        let currentSlide = 0;
+
+        if (track && prevBtn && nextBtn) {
+            const slides = document.querySelectorAll('.review-slide');
+            const totalSlides = slides.length;
+
+            const updateSlider = () => {
+                track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            };
+
+            nextBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlider();
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlider();
+            });
+        }
     </script>
 </body>
 </html>
